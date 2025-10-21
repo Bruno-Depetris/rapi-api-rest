@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
-import { Vendedor } from './Vendedor.entity';
+import { Vendedor } from './vendedor.entity';
 import { Repartidor } from './repartidor.entity';
 
 @Entity('Usuarios')
