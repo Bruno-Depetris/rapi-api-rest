@@ -59,10 +59,10 @@ export class UsuariosController {
 
   @Get()
   @UseGuards(RolesGuard)
-  @Roles('admin')
+  //@Roles('admin')
   async listarUsuarios(
-    @Query('page', ParseIntPipe) page: number = 1,
-    @Query('limit', ParseIntPipe) limit: number = 10,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
   ) {
     return await this.usuariosService.listarUsuarios(page, limit);
   }

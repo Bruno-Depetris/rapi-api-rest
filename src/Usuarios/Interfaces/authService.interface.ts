@@ -5,11 +5,11 @@ import { LoginAdminDto } from '../DTOs/loginAdmin.dto';
 export interface IAuthService {
   /**
    * 
-   * @param registerDto
+   * @param registerDto 
    * @returns 
    */
   register(registerDto: RegisterDto): Promise<{
-    access_token: string;
+    message: string;
     user: {
       usuarioId: number;
       nombre: string;
@@ -37,7 +37,7 @@ export interface IAuthService {
   }>;
 
   /**
-   *
+   * 
    * @param loginAdminDto 
    * @returns 
    */
@@ -50,9 +50,8 @@ export interface IAuthService {
   }>;
 
   /**
-   * Valida si un token JWT es válido
+   * 
    * @param token 
-   * @returns 
    */
   validateToken(token: string): Promise<{
     valid: boolean;

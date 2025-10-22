@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsuarioRepository } from '../Repositories/usuario.repository';
@@ -17,7 +17,6 @@ export class AuthService implements IAuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-
     const emailExiste = await this.usuarioRepository.existsByEmail(registerDto.Email);
     if (emailExiste) {
       throw new ConflictException('El email ya está registrado');
@@ -33,15 +32,8 @@ export class AuthService implements IAuthService {
       Rol: 'cliente',
     });
 
-
-    const payload = {
-      sub: nuevoUsuario.UsuarioId,
-      email: nuevoUsuario.Email,
-      rol: nuevoUsuario.Rol,
-    };
-
     return {
-      access_token: this.jwtService.sign(payload),
+      message: 'Usuario registrado exitosamente',
       user: {
         usuarioId: nuevoUsuario.UsuarioId,
         nombre: nuevoUsuario.Nombre,
@@ -52,9 +44,7 @@ export class AuthService implements IAuthService {
     };
   }
 
-
   async login(loginDto: LoginDto) {
-
     const usuario = await this.usuarioRepository.findByEmail(loginDto.Email);
     if (!usuario) {
       throw new UnauthorizedException('Credenciales inválidas');
@@ -103,22 +93,19 @@ export class AuthService implements IAuthService {
   }
 
   async loginAdmin(loginAdminDto: LoginAdminDto) {
-    // Buscar admin por usuario
     const admin = await this.adminRepository.findByUsuario(loginAdminDto.Usuario);
     if (!admin) {
       throw new UnauthorizedException('Credenciales de administrador inválidas');
     }
 
-    // Verificar contraseña
     const passwordValida = await bcrypt.compare(loginAdminDto.Password, admin.Password);
     if (!passwordValida) {
       throw new UnauthorizedException('Credenciales de administrador inválidas');
     }
 
-    // Generar JWT (con rol especial 'admin')
     const payload = {
       sub: admin.AdministradorID,
-      email: admin.Usuario, // Usamos el username como email
+      email: admin.Usuario,
       rol: 'admin',
     };
 
@@ -130,6 +117,7 @@ export class AuthService implements IAuthService {
       },
     };
   }
+
   async validateToken(token: string) {
     try {
       const payload = this.jwtService.verify(token);
