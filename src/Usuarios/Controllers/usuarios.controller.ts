@@ -59,7 +59,7 @@ export class UsuariosController {
 
   @Get()
   @UseGuards(RolesGuard)
-  //@Roles('admin')
+  @Roles('admin')
   async listarUsuarios(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
