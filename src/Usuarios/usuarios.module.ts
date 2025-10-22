@@ -10,6 +10,7 @@ import { UsuarioRepository } from './Repositories/usuario.repository';
 import { VendedorRepository } from './Repositories/vendedor.repository';
 import { RepartidorRepository } from './Repositories/repartidor.repository';
 import { AdministradorRepository } from './Repositories/admin.repository';
+import { NegocioRepository } from 'src/Negocios/Repositories/negocio.repository';
 
 import { AuthService } from './Services/auth.service';
 import { UsuariosService } from './Services/usuarios.service';
@@ -17,6 +18,7 @@ import { UsuariosService } from './Services/usuarios.service';
 import { AuthModule } from '../auth/auth.module';
 import { AuthController } from './Controllers/auth.controller';
 import { UsuariosController } from './Controllers/usuarios.controller';
+import { Negocio } from 'src/Negocios/Entities/negocio.entity';
 
 @Module({
   imports: [
@@ -25,6 +27,7 @@ import { UsuariosController } from './Controllers/usuarios.controller';
       Vendedor,
       Repartidor,
       Administrador,
+      Negocio,
     ]),
 
     AuthModule,
@@ -36,6 +39,7 @@ import { UsuariosController } from './Controllers/usuarios.controller';
     VendedorRepository,
     RepartidorRepository,
     AdministradorRepository,
+    NegocioRepository,
 
     AuthService,
     UsuariosService,

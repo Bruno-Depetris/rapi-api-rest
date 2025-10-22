@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, BadRequestException, ConflictException }
 import { UsuarioRepository } from '../Repositories/usuario.repository';
 import { VendedorRepository } from '../Repositories/vendedor.repository';
 import { RepartidorRepository } from '../Repositories/repartidor.repository';
+import { NegocioRepository } from '../../Negocios/Repositories/negocio.repository';
 import { CambiarAVendedorDto } from '../DTOs/crearVendedor.dto';
 import { CrearRepartidorDto } from '../DTOs/crearRepartidor.dto';
 import { IUsuariosService } from '../Interfaces/usuariosService.interface';
@@ -12,6 +13,7 @@ export class UsuariosService implements IUsuariosService{
     private readonly usuarioRepository: UsuarioRepository,
     private readonly vendedorRepository: VendedorRepository,
     private readonly repartidorRepository: RepartidorRepository,
+    private readonly negocioRepository: NegocioRepository,
   ) {}
 
   async obtenerPerfil(usuarioId: number) {
@@ -49,7 +51,6 @@ export class UsuariosService implements IUsuariosService{
   }
 
   async cambiarAVendedor(usuarioId: number, cambiarDto: CambiarAVendedorDto) {
-
     const usuario = await this.usuarioRepository.findById(usuarioId);
     if (!usuario) {
       throw new NotFoundException('Usuario no encontrado');
@@ -64,17 +65,22 @@ export class UsuariosService implements IUsuariosService{
       throw new ConflictException('Este usuario ya es vendedor');
     }
 
-    // Crear registro de vendedor
+    
+    const nuevoNegocio = await this.negocioRepository.create({
+      NombreNegocio: cambiarDto.NombreNegocio,
+      CategoriaId: cambiarDto.CategoriaId,
+    });
+
     const nuevoVendedor = await this.vendedorRepository.create({
       UsuarioId: usuarioId,
-      NegocioId: cambiarDto.CategoriaId,
+      NegocioId: nuevoNegocio.NegocioId, 
       Direccion: cambiarDto.Direccion,
-      Telefono: cambiarDto.Telefono ,
-      Horario: cambiarDto.Horario ,
+      Telefono: cambiarDto.Telefono,
+      Horario: cambiarDto.Horario,
       Comision: cambiarDto.Comision,
     });
 
-    // Actualizar rol del usuario
+  
     await this.usuarioRepository.updateRol(usuarioId, 'vendedor');
 
     return {
@@ -84,10 +90,14 @@ export class UsuariosService implements IUsuariosService{
         usuarioId: nuevoVendedor.UsuarioId,
         negocioId: nuevoVendedor.NegocioId,
       },
+      negocio: {
+        negocioId: nuevoNegocio.NegocioId,
+        nombreNegocio: nuevoNegocio.NombreNegocio,
+      },
     };
   }
 
-  // ========== CAMBIAR A REPARTIDOR ==========
+
   async cambiarARepartidor(usuarioId: number, crearDto: CrearRepartidorDto) {
     // Verificar que el usuario existe
     const usuario = await this.usuarioRepository.findById(usuarioId);
@@ -125,7 +135,6 @@ export class UsuariosService implements IUsuariosService{
     };
   }
 
-  // ========== LISTAR TODOS LOS USUARIOS (ADMIN) ==========
   async listarUsuarios(page: number = 1, limit: number = 10) {
     const usuarios = await this.usuarioRepository.findAll(page, limit);
     return usuarios.map((u) => ({
@@ -137,24 +146,20 @@ export class UsuariosService implements IUsuariosService{
     }));
   }
 
-  // ========== ELIMINAR USUARIO (ADMIN) ==========
   async eliminarUsuario(usuarioId: number) {
     const usuario = await this.usuarioRepository.findById(usuarioId);
     if (!usuario) {
       throw new NotFoundException('Usuario no encontrado');
     }
 
-    // Si es vendedor, eliminar registro de vendedor
     if (usuario.Rol === 'vendedor' && usuario.vendedor) {
       await this.vendedorRepository.delete(usuario.vendedor.VendedorId);
     }
 
-    // Si es repartidor, eliminar registro de repartidor
     if (usuario.Rol === 'repartidor' && usuario.repartidor) {
       await this.repartidorRepository.delete(usuario.repartidor.RepartidorId);
     }
 
-    // Eliminar usuario
     await this.usuarioRepository.delete(usuarioId);
 
     return {

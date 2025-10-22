@@ -2,11 +2,6 @@ import { CambiarAVendedorDto } from '../DTOs/crearVendedor.dto';
 import { CrearRepartidorDto } from '../DTOs/crearRepartidor.dto';
 
 export interface IUsuariosService {
-  /**
-   * 
-   * @param usuarioId 
-   * @returns 
-   */
   obtenerPerfil(usuarioId: number): Promise<{
     usuarioId: number;
     nombre: string;
@@ -26,12 +21,6 @@ export interface IUsuariosService {
     };
   }>;
 
-  /**
-   * 
-   * @param usuarioId 
-   * @param cambiarDto 
-   * @returns 
-   */
   cambiarAVendedor(
     usuarioId: number,
     cambiarDto: CambiarAVendedorDto,
@@ -44,12 +33,6 @@ export interface IUsuariosService {
     };
   }>;
 
-  /**
-   * 
-   * @param usuarioId 
-   * @param crearDto 
-   * @returns 
-   */
   cambiarARepartidor(
     usuarioId: number,
     crearDto: CrearRepartidorDto,
@@ -62,12 +45,6 @@ export interface IUsuariosService {
     };
   }>;
 
-  /**
-   * 
-   * @param page 
-   * @param limit 
-   * @returns 
-   */
   listarUsuarios(
     page?: number,
     limit?: number,
@@ -81,11 +58,7 @@ export interface IUsuariosService {
     }>
   >;
 
-  /**
-   * 
-   * @param usuarioId ID del usuario a eliminar
-   * @returns Confirmación de eliminación
-   */
+
   eliminarUsuario(usuarioId: number): Promise<{
     message: string;
   }>;
