@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsuariosModule } from './Usuarios/usuarios.module';
 import { NegociosModule } from './Negocios/negocios.module';
 import { ProductosModule } from './Productos/productos.module';
+import { PedidosModule } from './Pedidos/pedidos.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ProductosModule } from './Productos/productos.module';
     UsuariosModule,
     NegociosModule,
     ProductosModule,
+    PedidosModule,
   ],
   providers: [AppService],
 })
