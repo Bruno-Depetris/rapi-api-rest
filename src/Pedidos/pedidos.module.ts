@@ -9,7 +9,6 @@ import { DetallePedido } from './Domain/Entities/detallepedido.entity';
 import { MetodoPago } from './Domain/Entities/metodopago.entity';
 import { Pedido } from './Domain/Entities/pedido.entity';
 
-
 import { CarritoRepository } from './Infrastructure/Persistence/carrito.repository';
 import { CarritoCuponRepository } from './Infrastructure/Persistence/carritocupon.repository';
 import { CarritoItemRepository } from './Infrastructure/Persistence/carritoitem.repository';
@@ -23,12 +22,10 @@ import { RepartidorAdapter } from './Infrastructure/Adapters/Outbound/repartidor
 import { VendedorAdapter } from './Infrastructure/Adapters/Outbound/vendedor.adapter';
 import { ProductoAdapter } from './Infrastructure/Adapters/Outbound/producto.adapter';
 
-
 import { CarritoController } from './Infrastructure/Adapters/Inbound/carrito.controller';
 import { CuponController } from './Infrastructure/Adapters/Inbound/cupon.controller';
 import { MetodoPagoController } from './Infrastructure/Adapters/Inbound/metodopago.controller';
 import { PedidoController } from './Infrastructure/Adapters/Inbound/pedido.controller';
-
 
 import { ObtenerCarritoUseCase } from './Application/UseCases/Carrito/obtenercarrito.usecase';
 import { AgregarItemUseCase } from './Application/UseCases/Carrito/agregarItem.usecase';
@@ -37,7 +34,6 @@ import { EliminarItemUseCase } from './Application/UseCases/Carrito/eliminarItem
 import { VaciarCarritoUseCase } from './Application/UseCases/Carrito/vaciarCarrito.usecase';
 import { AplicarCuponUseCase } from './Application/UseCases/Carrito/aplicarcupon.usecase';
 import { RemoverCuponUseCase } from './Application/UseCases/Carrito/removercupon.usecase';
-
 
 import { CrearCuponUseCase } from './Application/UseCases/Cupon/crearcupon.usecase';
 import { ObtenerCuponUseCase } from './Application/UseCases/Cupon/obtenercupon.usecase';
@@ -52,7 +48,6 @@ import { ObtenerMetodoPagoUseCase } from './Application/UseCases/MetodoPago/obte
 import { ListarMetodosPagoUseCase } from './Application/UseCases/MetodoPago/listarmetodopago.usecase';
 import { ActualizarMetodoPagoUseCase } from './Application/UseCases/MetodoPago/actualizarmetodopago.usecase';
 import { EliminarMetodoPagoUseCase } from './Application/UseCases/MetodoPago/eliminarmetodopago.usecase';
-
 
 import { CrearPedidoUseCase } from './Application/UseCases/Pedido/crearpedido.usecase';
 import { ObtenerPedidoUseCase } from './Application/UseCases/Pedido/obtenerpedido.usecase';
@@ -88,7 +83,9 @@ import { ProductosModule } from '../Productos/productos.module';
   ],
 
   providers: [
-
+    // ==========================================
+    // REPOSITORIES
+    // ==========================================
     CarritoRepository,
     CarritoCuponRepository,
     CarritoItemRepository,
@@ -97,6 +94,17 @@ import { ProductosModule } from '../Productos/productos.module';
     MetodoPagoRepository,
     PedidoRepository,
 
+    // ==========================================
+    // ADAPTERS OUTBOUND (CLASES)
+    // ==========================================
+    UsuarioAdapter,      // 👈 AGREGAR ESTO
+    RepartidorAdapter,   // 👈 AGREGAR ESTO
+    VendedorAdapter,     // 👈 AGREGAR ESTO
+    ProductoAdapter,     // 👈 AGREGAR ESTO
+
+    // ==========================================
+    // ADAPTERS OUTBOUND (TOKENS)
+    // ==========================================
     {
       provide: 'IUsuarioPort',
       useClass: UsuarioAdapter,
@@ -114,6 +122,9 @@ import { ProductosModule } from '../Productos/productos.module';
       useClass: ProductoAdapter,
     },
 
+    // ==========================================
+    // USE CASES - CARRITO
+    // ==========================================
     {
       provide: 'IObtenerCarritoUseCase',
       useClass: ObtenerCarritoUseCase,
@@ -143,6 +154,9 @@ import { ProductosModule } from '../Productos/productos.module';
       useClass: RemoverCuponUseCase,
     },
 
+    // ==========================================
+    // USE CASES - CUPON
+    // ==========================================
     {
       provide: 'ICrearCuponUseCase',
       useClass: CrearCuponUseCase,
@@ -172,7 +186,9 @@ import { ProductosModule } from '../Productos/productos.module';
       useClass: ValidarCuponUseCase,
     },
 
-
+    // ==========================================
+    // USE CASES - METODO PAGO
+    // ==========================================
     {
       provide: 'ICrearMetodoPagoUseCase',
       useClass: CrearMetodoPagoUseCase,
@@ -194,6 +210,9 @@ import { ProductosModule } from '../Productos/productos.module';
       useClass: EliminarMetodoPagoUseCase,
     },
 
+    // ==========================================
+    // USE CASES - PEDIDO
+    // ==========================================
     {
       provide: 'ICrearPedidoUseCase',
       useClass: CrearPedidoUseCase,

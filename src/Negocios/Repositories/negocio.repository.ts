@@ -60,6 +60,17 @@ export class NegocioRepository {
     });
   }
 
+  async findByEstado(estado: string): Promise<Negocio[]> {
+  return await this.repository.find({
+    where: { Estado: estado },
+    relations: ['categoria'],
+  });
+}
+
+async updateEstado(id: number, estado: string): Promise<void> {
+  await this.repository.update(id, { Estado: estado });
+}
+
   async count(): Promise<number> {
     return await this.repository.count();
   }

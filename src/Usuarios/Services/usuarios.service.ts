@@ -8,7 +8,7 @@ import { CrearRepartidorDto } from '../DTOs/crearRepartidor.dto';
 import { IUsuariosService } from '../Interfaces/usuariosService.interface';
 
 @Injectable()
-export class UsuariosService implements IUsuariosService{
+export class UsuariosService implements IUsuariosService {
   constructor(
     private readonly usuarioRepository: UsuarioRepository,
     private readonly vendedorRepository: VendedorRepository,
@@ -30,13 +30,15 @@ export class UsuariosService implements IUsuariosService{
       direccion: usuario.Direccion,
     };
 
-    if (usuario.Rol === 'vendedor' && usuario.vendedor) {
+    // 👇 MODIFICADO - Mostrar vendedor sin importar el rol (para ver solicitudes pendientes)
+    if (usuario.vendedor) {
       perfil.vendedor = {
         vendedorId: usuario.vendedor.VendedorId,
         negocioId: usuario.vendedor.NegocioId,
         telefono: usuario.vendedor.Telefono,
         horario: usuario.vendedor.Horario,
         comision: usuario.vendedor.Comision,
+        estado: usuario.vendedor.Estado, // 👈 AGREGAR ESTADO
       };
     }
 
@@ -57,72 +59,151 @@ export class UsuariosService implements IUsuariosService{
     }
 
     if (usuario.Rol !== 'cliente') {
-      throw new BadRequestException('Solo los clientes pueden cambiar a vendedor');
+      throw new BadRequestException('Solo los clientes pueden solicitar ser vendedor');
     }
 
     const yaEsVendedor = await this.vendedorRepository.existsByUsuarioId(usuarioId);
     if (yaEsVendedor) {
-      throw new ConflictException('Este usuario ya es vendedor');
+      throw new ConflictException('Ya tienes una solicitud de vendedor');
     }
 
-    
+    // 👇 MODIFICADO - Crear negocio PENDIENTE
     const nuevoNegocio = await this.negocioRepository.create({
       NombreNegocio: cambiarDto.NombreNegocio,
       CategoriaId: cambiarDto.CategoriaId,
+      Estado: 'Pendiente', // 👈 PENDIENTE
     });
 
+    // 👇 MODIFICADO - Crear vendedor PENDIENTE
     const nuevoVendedor = await this.vendedorRepository.create({
       UsuarioId: usuarioId,
-      NegocioId: nuevoNegocio.NegocioId, 
+      NegocioId: nuevoNegocio.NegocioId,
       Direccion: cambiarDto.Direccion,
       Telefono: cambiarDto.Telefono,
       Horario: cambiarDto.Horario,
       Comision: cambiarDto.Comision,
+      Estado: 'Pendiente', // 👈 PENDIENTE
     });
 
-  
-    await this.usuarioRepository.updateRol(usuarioId, 'vendedor');
+    // ❌ NO cambiar el rol todavía - se cambia cuando el admin apruebe
+    // await this.usuarioRepository.updateRol(usuarioId, 'vendedor');
 
     return {
-      message: 'Usuario actualizado a vendedor exitosamente',
+      message: 'Solicitud de vendedor enviada. Espera la aprobación del administrador.',
       vendedor: {
         vendedorId: nuevoVendedor.VendedorId,
         usuarioId: nuevoVendedor.UsuarioId,
         negocioId: nuevoVendedor.NegocioId,
+        estado: nuevoVendedor.Estado,
       },
       negocio: {
         negocioId: nuevoNegocio.NegocioId,
         nombreNegocio: nuevoNegocio.NombreNegocio,
+        estado: nuevoNegocio.Estado,
       },
     };
   }
 
+  // 👇 NUEVO - Listar solicitudes pendientes
+  async listarSolicitudesVendedor() {
+    const vendedores = await this.vendedorRepository.findByEstado('Pendiente');
+
+    return vendedores.map((v) => ({
+      vendedorId: v.VendedorId,
+      usuario: {
+        usuarioId: v.usuario.UsuarioId,
+        nombre: v.usuario.Nombre,
+        email: v.usuario.Email,
+      },
+      negocio: v.negocio
+        ? {
+            negocioId: v.negocio.NegocioId,
+            nombreNegocio: v.negocio.NombreNegocio,
+          }
+        : null,
+      telefono: v.Telefono,
+      direccion: v.Direccion,
+      horario: v.Horario,
+      comision: v.Comision,
+      estado: v.Estado,
+    }));
+  }
+
+  async aprobarVendedor(vendedorId: number) {
+    const vendedor = await this.vendedorRepository.findById(vendedorId);
+    if (!vendedor) {
+      throw new NotFoundException('Vendedor no encontrado');
+    }
+
+    if (vendedor.Estado !== 'Pendiente') {
+      throw new BadRequestException('Esta solicitud ya fue procesada');
+    }
+
+    // Aprobar vendedor
+    await this.vendedorRepository.updateEstado(vendedorId, 'Aprobado');
+
+    // Activar negocio
+    if (vendedor.NegocioId) {
+      await this.negocioRepository.updateEstado(vendedor.NegocioId, 'Activo');
+    }
+
+    // AHORA SÍ cambiar el rol del usuario
+    await this.usuarioRepository.updateRol(vendedor.UsuarioId, 'vendedor');
+
+    return {
+      message: 'Vendedor aprobado exitosamente',
+      vendedor: {
+        vendedorId: vendedor.VendedorId,
+        estado: 'Aprobado',
+      },
+    };
+  }
+
+  // 👇 NUEVO - Rechazar vendedor
+  async rechazarVendedor(vendedorId: number, motivo?: string) {
+    const vendedor = await this.vendedorRepository.findById(vendedorId);
+    if (!vendedor) {
+      throw new NotFoundException('Vendedor no encontrado');
+    }
+
+    if (vendedor.Estado !== 'Pendiente') {
+      throw new BadRequestException('Esta solicitud ya fue procesada');
+    }
+
+    // Rechazar vendedor
+    await this.vendedorRepository.updateEstado(vendedorId, 'Rechazado');
+
+    // Rechazar negocio
+    if (vendedor.NegocioId) {
+      await this.negocioRepository.updateEstado(vendedor.NegocioId, 'Rechazado');
+    }
+
+    return {
+      message: 'Solicitud de vendedor rechazada',
+      motivo: motivo || 'No especificado',
+    };
+  }
 
   async cambiarARepartidor(usuarioId: number, crearDto: CrearRepartidorDto) {
-    // Verificar que el usuario existe
     const usuario = await this.usuarioRepository.findById(usuarioId);
     if (!usuario) {
       throw new NotFoundException('Usuario no encontrado');
     }
 
-    // Verificar que sea cliente
     if (usuario.Rol !== 'cliente') {
       throw new BadRequestException('Solo los clientes pueden cambiar a repartidor');
     }
 
-    // Verificar que no sea ya repartidor
     const yaEsRepartidor = await this.repartidorRepository.existsByUsuarioId(usuarioId);
     if (yaEsRepartidor) {
       throw new ConflictException('Este usuario ya es repartidor');
     }
 
-    // Crear registro de repartidor
     const nuevoRepartidor = await this.repartidorRepository.create({
       UsuarioId: usuarioId,
       Vehiculo: crearDto.Vehiculo,
     });
 
-    // Actualizar rol del usuario
     await this.usuarioRepository.updateRol(usuarioId, 'repartidor');
 
     return {

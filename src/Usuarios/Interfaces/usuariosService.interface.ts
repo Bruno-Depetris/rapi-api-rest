@@ -14,6 +14,7 @@ export interface IUsuariosService {
       telefono: string | null;
       horario: string | null;
       comision: number | null;
+      estado: string; // 👈 AGREGAR
     };
     repartidor?: {
       repartidorId: number;
@@ -30,6 +31,12 @@ export interface IUsuariosService {
       vendedorId: number;
       usuarioId: number;
       negocioId: number | null;
+      estado: string;
+    };
+    negocio: {
+      negocioId: number;
+      nombreNegocio: string;
+      estado: string;
     };
   }>;
 
@@ -58,8 +65,43 @@ export interface IUsuariosService {
     }>
   >;
 
-
   eliminarUsuario(usuarioId: number): Promise<{
     message: string;
+  }>;
+
+  listarSolicitudesVendedor(): Promise<
+    Array<{
+      vendedorId: number;
+      usuario: {
+        usuarioId: number;
+        nombre: string;
+        email: string;
+      };
+      negocio: {
+        negocioId: number;
+        nombreNegocio: string;
+      } | null;
+      telefono: string | null;
+      direccion: string | null;
+      horario: string | null;
+      comision: number | null;
+      estado: string;
+    }>
+  >;
+
+  aprobarVendedor(vendedorId: number): Promise<{
+    message: string;
+    vendedor: {
+      vendedorId: number;
+      estado: string;
+    };
+  }>;
+
+  rechazarVendedor(
+    vendedorId: number,
+    motivo?: string,
+  ): Promise<{
+    message: string;
+    motivo: string;
   }>;
 }

@@ -25,7 +25,13 @@ export class Vendedor {
   @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
   Comision: number;
 
-  // Relaciones
+  @Column({ 
+    type: 'enum', 
+    enum: ['Pendiente', 'Aprobado', 'Rechazado'],
+    default: 'Pendiente'
+  })
+  Estado: string;
+
   @OneToOne(() => Usuario, (usuario) => usuario.vendedor)
   @JoinColumn({ name: 'UsuarioId' })
   usuario: Usuario;

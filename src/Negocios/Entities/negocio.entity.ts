@@ -12,6 +12,13 @@ export class Negocio {
   @Column({ type: 'varchar', length: 150 })
   NombreNegocio: string;
 
+    @Column({ 
+    type: 'enum', 
+    enum: ['Pendiente', 'Activo', 'Rechazado'],
+    default: 'Pendiente'
+  })
+  Estado: string;
+
   @ManyToOne(() => Categoria, { nullable: true })
   @JoinColumn({ name: 'CategoriaId' })
   categoria?: Categoria;

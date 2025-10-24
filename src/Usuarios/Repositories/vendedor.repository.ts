@@ -45,6 +45,18 @@ export class VendedorRepository {
     await this.repository.delete(id);
   }
 
+  async findByEstado(estado: string): Promise<Vendedor[]> {
+  return await this.repository.find({
+    where: { Estado: estado },
+    relations: ['usuario', 'negocio'],
+    order: { VendedorId: 'DESC' },
+  });
+}
+
+async updateEstado(id: number, estado: string): Promise<void> {
+  await this.repository.update(id, { Estado: estado });
+}
+
   async findAll(page: number = 1, limit: number = 10): Promise<Vendedor[]> {
     return await this.repository.find({
       skip: (page - 1) * limit,
