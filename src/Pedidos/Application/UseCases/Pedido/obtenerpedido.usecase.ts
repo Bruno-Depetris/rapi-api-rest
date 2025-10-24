@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, Inject } from '@nestjs/common';
 import type { IObtenerPedidoUseCase } from '../../../Infrastructure/Ports/Inbound/pedidousecase.port';
 import type { IRepartidorPort } from '../../../Infrastructure/Ports/Outbound/repartidor.port';
 import type { IVendedorPort } from '../../../Infrastructure/Ports/Outbound/vendedor.port';
@@ -8,7 +8,9 @@ import { PedidoRepository } from '../../../Infrastructure/Persistence/pedido.rep
 export class ObtenerPedidoUseCase implements IObtenerPedidoUseCase {
   constructor(
     private readonly pedidoRepository: PedidoRepository,
+    @Inject('IRepartidorPort')
     private readonly repartidorPort: IRepartidorPort,
+    @Inject('IVendedorPort')
     private readonly vendedorPort: IVendedorPort,
   ) {}
 

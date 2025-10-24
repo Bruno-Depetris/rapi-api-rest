@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Inject } from '@nestjs/common';
 import type { ITomarPedidoUseCase } from '../../../Infrastructure/Ports/Inbound/pedidousecase.port';
 import type { IRepartidorPort } from '../../../Infrastructure/Ports/Outbound/repartidor.port';
 import { PedidoRepository } from '../../../Infrastructure/Persistence/pedido.repository';
@@ -6,6 +6,7 @@ import { PedidoRepository } from '../../../Infrastructure/Persistence/pedido.rep
 @Injectable()
 export class TomarPedidoUseCase implements ITomarPedidoUseCase {
   constructor(
+    @Inject('IRepartidorPort')
     private readonly repartidorPort: IRepartidorPort,
     private readonly pedidoRepository: PedidoRepository,
   ) {}

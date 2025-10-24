@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException, Inject } from '@nestjs/common';
 import type { IActualizarItemUseCase } from '../../../Infrastructure/Ports/Inbound/carritoUseCase.port';
 import type { IProductoPort } from '../../../Infrastructure/Ports/Outbound/producto.port';
 import { CarritoRepository } from '../../../Infrastructure/Persistence/carrito.repository';
@@ -12,6 +12,7 @@ export class ActualizarItemUseCase implements IActualizarItemUseCase {
     private readonly carritoRepository: CarritoRepository,
     private readonly carritoItemRepository: CarritoItemRepository,
     private readonly carritoCuponRepository: CarritoCuponRepository,
+    @Inject('IProductoPort')
     private readonly productoPort: IProductoPort,
   ) {}
 

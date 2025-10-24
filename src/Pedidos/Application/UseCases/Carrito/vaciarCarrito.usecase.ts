@@ -18,13 +18,10 @@ export class VaciarCarritoUseCase implements IVaciarCarritoUseCase {
       throw new NotFoundException('No tienes un carrito activo');
     }
 
-    // Eliminar todos los items
     await this.carritoItemRepository.deleteByCarritoId(carrito.CarritoId);
 
-    // Eliminar todos los cupones
     await this.carritoCuponRepository.deleteByCarritoId(carrito.CarritoId);
 
-    // Resetear totales
     await this.carritoRepository.actualizarTotales(carrito.CarritoId, 0, 0, 0);
 
     return {

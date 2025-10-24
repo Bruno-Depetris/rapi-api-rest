@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException,Inject } from '@nestjs/common';
 import type { IAgregarItemUseCase } from '../../../Infrastructure/Ports/Inbound/carritoUseCase.port';
 import type { IProductoPort } from '../../../Infrastructure/Ports/Outbound/producto.port';
 import { CarritoRepository } from '../../../Infrastructure/Persistence/carrito.repository';
@@ -10,6 +10,7 @@ export class AgregarItemUseCase implements IAgregarItemUseCase {
   constructor(
     private readonly carritoRepository: CarritoRepository,
     private readonly carritoItemRepository: CarritoItemRepository,
+    @Inject('IProductoPort')
     private readonly productoPort: IProductoPort,
   ) {}
 

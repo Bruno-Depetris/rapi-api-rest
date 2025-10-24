@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException, Inject } from '@nestjs/common';
 import type{ ICrearPedidoUseCase } from '../../../Infrastructure/Ports/Inbound/pedidousecase.port';
 import type{ IUsuarioPort } from '../../../Infrastructure/Ports/Outbound/usuario.port';
 import type{ IRepartidorPort } from '../../../Infrastructure/Ports/Outbound/repartidor.port';
@@ -7,11 +7,14 @@ import { DetallePedidoRepository } from '../../../Infrastructure/Persistence/det
 import { CarritoRepository } from '../../../Infrastructure/Persistence/carrito.repository';
 import { MetodoPagoRepository } from '../../../Infrastructure/Persistence/metodopago.repository';
 import { CrearPedidoDto } from '../../DTOs/crearpedido.dto';
+import { In } from 'typeorm';
 
 @Injectable()
 export class CrearPedidoUseCase implements ICrearPedidoUseCase {
   constructor(
+    @Inject('IUsuarioPort')
     private readonly usuarioPort: IUsuarioPort,
+    @Inject('IRepartidorPort')
     private readonly repartidorPort: IRepartidorPort,
     private readonly pedidoRepository: PedidoRepository,
     private readonly detallePedidoRepository: DetallePedidoRepository,
