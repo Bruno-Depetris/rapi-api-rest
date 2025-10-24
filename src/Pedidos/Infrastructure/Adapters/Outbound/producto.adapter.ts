@@ -1,10 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import type { IProductoPort } from '../../Ports/Outbound/producto.port';
 import { ProductoRepository } from '../../../../Productos/Repositories/producto.repository';
 
 @Injectable()
 export class ProductoAdapter implements IProductoPort {
-  constructor(private readonly productoRepository: ProductoRepository) {}
+  constructor(
+  @Inject(ProductoRepository)
+  private readonly productoRepository: ProductoRepository
+) {}
 
   async validarExiste(productoId: number): Promise<boolean> {
     const producto = await this.productoRepository.findById(productoId);

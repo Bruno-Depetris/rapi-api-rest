@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject} from '@nestjs/common';
 import type { IVendedorPort } from '../../Ports/Outbound/vendedor.port';
 import { VendedorRepository } from '../../../../Usuarios/Repositories/vendedor.repository';
 import { PedidoRepository } from '../../Persistence/pedido.repository';
@@ -6,8 +6,9 @@ import { PedidoRepository } from '../../Persistence/pedido.repository';
 @Injectable()
 export class VendedorAdapter implements IVendedorPort {
   constructor(
+    @Inject(VendedorRepository) 
     private readonly vendedorRepository: VendedorRepository,
-    private readonly pedidoRepository: PedidoRepository,
+    private readonly pedidoRepository: PedidoRepository, 
   ) {}
 
   async obtenerPorUsuarioId(usuarioId: number) {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import type { IRepartidorPort } from '../../Ports/Outbound/repartidor.port';
 import { RepartidorRepository } from '../../../../Usuarios/Repositories/repartidor.repository';
 import { UsuarioRepository } from '../../../../Usuarios/Repositories/usuario.repository';
@@ -6,7 +6,9 @@ import { UsuarioRepository } from '../../../../Usuarios/Repositories/usuario.rep
 @Injectable()
 export class RepartidorAdapter implements IRepartidorPort {
   constructor(
+    @Inject(RepartidorRepository) 
     private readonly repartidorRepository: RepartidorRepository,
+    @Inject(UsuarioRepository)  
     private readonly usuarioRepository: UsuarioRepository,
   ) {}
 
