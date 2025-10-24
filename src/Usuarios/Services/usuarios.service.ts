@@ -30,7 +30,6 @@ export class UsuariosService implements IUsuariosService {
       direccion: usuario.Direccion,
     };
 
-    // 👇 MODIFICADO - Mostrar vendedor sin importar el rol (para ver solicitudes pendientes)
     if (usuario.vendedor) {
       perfil.vendedor = {
         vendedorId: usuario.vendedor.VendedorId,
@@ -38,7 +37,7 @@ export class UsuariosService implements IUsuariosService {
         telefono: usuario.vendedor.Telefono,
         horario: usuario.vendedor.Horario,
         comision: usuario.vendedor.Comision,
-        estado: usuario.vendedor.Estado, // 👈 AGREGAR ESTADO
+        estado: usuario.vendedor.Estado, 
       };
     }
 
@@ -67,14 +66,12 @@ export class UsuariosService implements IUsuariosService {
       throw new ConflictException('Ya tienes una solicitud de vendedor');
     }
 
-    // 👇 MODIFICADO - Crear negocio PENDIENTE
     const nuevoNegocio = await this.negocioRepository.create({
       NombreNegocio: cambiarDto.NombreNegocio,
       CategoriaId: cambiarDto.CategoriaId,
-      Estado: 'Pendiente', // 👈 PENDIENTE
+      Estado: 'Pendiente', 
     });
 
-    // 👇 MODIFICADO - Crear vendedor PENDIENTE
     const nuevoVendedor = await this.vendedorRepository.create({
       UsuarioId: usuarioId,
       NegocioId: nuevoNegocio.NegocioId,
@@ -82,11 +79,8 @@ export class UsuariosService implements IUsuariosService {
       Telefono: cambiarDto.Telefono,
       Horario: cambiarDto.Horario,
       Comision: cambiarDto.Comision,
-      Estado: 'Pendiente', // 👈 PENDIENTE
+      Estado: 'Pendiente', 
     });
-
-    // ❌ NO cambiar el rol todavía - se cambia cuando el admin apruebe
-    // await this.usuarioRepository.updateRol(usuarioId, 'vendedor');
 
     return {
       message: 'Solicitud de vendedor enviada. Espera la aprobación del administrador.',
@@ -104,7 +98,6 @@ export class UsuariosService implements IUsuariosService {
     };
   }
 
-  // 👇 NUEVO - Listar solicitudes pendientes
   async listarSolicitudesVendedor() {
     const vendedores = await this.vendedorRepository.findByEstado('Pendiente');
 
@@ -159,7 +152,6 @@ export class UsuariosService implements IUsuariosService {
     };
   }
 
-  // 👇 NUEVO - Rechazar vendedor
   async rechazarVendedor(vendedorId: number, motivo?: string) {
     const vendedor = await this.vendedorRepository.findById(vendedorId);
     if (!vendedor) {
