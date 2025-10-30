@@ -1,4 +1,5 @@
 import {v2 as cloudinary} from 'cloudinary';
+import * as streamifier from 'streamifier';
 import * as fs from 'fs';
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { ProductoRepository } from '../Repositories/producto.repository';
@@ -70,17 +71,22 @@ export class ProductosService implements IProductoService {
     }));
   }
 
-  async subirImagen(file: Express.Multer.File){
+  async subirImagen(file: Express.Multer.File) {
     if (!file) {
       throw new NotFoundException('No se ha recibido ningún archivo');
     }
 
     try {
-      const resultado = await cloudinary.uploader.upload(file.path, {
-        folder: 'productos',
+      const resultado: any = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: 'productos' },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          },
+        );
+        streamifier.createReadStream(file.buffer).pipe(uploadStream);
       });
-
-      fs.unlinkSync(file.path);
 
       return {
         message: 'Imagen subida exitosamente',
@@ -88,6 +94,7 @@ export class ProductosService implements IProductoService {
         public_id: resultado.public_id,
       };
     } catch (error) {
+      console.error('Error al subir la imagen:', error);
       throw new NotFoundException('Error al subir la imagen a Cloudinary');
     }
   }
