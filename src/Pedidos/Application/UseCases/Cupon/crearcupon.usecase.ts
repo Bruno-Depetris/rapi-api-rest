@@ -8,13 +8,11 @@ export class CrearCuponUseCase implements ICrearCuponUseCase {
   constructor(private readonly cuponRepository: CuponRepository) {}
 
   async ejecutar(dto: CrearCuponDto) {
-    // Verificar que el código no exista
     const existe = await this.cuponRepository.existsByCodigo(dto.Codigo);
     if (existe) {
       throw new ConflictException('Ya existe un cupón con ese código');
     }
 
-    // Validar descuento según tipo
     if (dto.TipoDescuento === 'porcentaje' && dto.Descuento > 100) {
       throw new BadRequestException('El descuento porcentual no puede ser mayor a 100');
     }

@@ -13,7 +13,6 @@ export class ActualizarCuponUseCase implements IActualizarCuponUseCase {
       throw new NotFoundException('Cupón no encontrado');
     }
 
-    // Si se cambia el código, verificar que no exista
     if (dto.Codigo && dto.Codigo !== cupon.Codigo) {
       const existe = await this.cuponRepository.existsByCodigo(dto.Codigo);
       if (existe) {

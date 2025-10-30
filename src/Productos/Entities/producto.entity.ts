@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Vendedor } from '../../Usuarios/Entities/vendedor.entity';
 import { CategoriaProducto } from './categoriaproducto.entity';
+import { Favoritos } from './favoritos.entity';
 
 @Entity('Productos')
 export class Producto {
@@ -34,6 +35,9 @@ export class Producto {
   @ManyToOne(() => Vendedor)
   @JoinColumn({ name: 'VendedorId' })
   vendedor: Vendedor;
+
+  @OneToMany(() => Favoritos, favoritos => favoritos.producto)
+  favoritos: Favoritos[];
 
   @ManyToOne(() => CategoriaProducto, { nullable: true })
   @JoinColumn({ name: 'CategoriaProductoId' })
