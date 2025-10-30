@@ -11,7 +11,10 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductosService } from '../Services/producto.service';
 import { CrearProductoDto } from '../DTOs/crearproducto.dto';
 import { ActualizarProductoDto } from '../DTOs/actualizarproducto.dto';
@@ -40,6 +43,13 @@ export class ProductosController {
     return await this.productosService.obtenerProducto(id);
   }
 
+  @Post('subir-imagen')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('vendedor')
+  @UseInterceptors(FileInterceptor('imagen'))
+  async subirImagen(@UploadedFile() file: Express.Multer.File) {
+    return await this.productosService.subirImagen(file);
+  }
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('vendedor')

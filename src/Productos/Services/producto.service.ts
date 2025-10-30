@@ -1,9 +1,13 @@
+import {v2 as cloudinary} from 'cloudinary';
+import * as fs from 'fs';
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { ProductoRepository } from '../Repositories/producto.repository';
 import { VendedorRepository } from '../../Usuarios/Repositories/vendedor.repository';
 import { CrearProductoDto } from '../DTOs/crearproducto.dto';
 import { ActualizarProductoDto } from '../DTOs/actualizarproducto.dto';
 import { IProductoService } from '../Interfaces/productoservice.interface';
+import { publicDecrypt } from 'crypto';
+
 
 @Injectable()
 export class ProductosService implements IProductoService {
@@ -64,6 +68,28 @@ export class ProductosService implements IProductoService {
       disponibilidad: p.Disponibilidad,
       imagenes: p.Imagenes,
     }));
+  }
+
+  async subirImagen(file: Express.Multer.File){
+    if (!file) {
+      throw new NotFoundException('No se ha recibido ningún archivo');
+    }
+
+    try {
+      const resultado = await cloudinary.uploader.upload(file.path, {
+        folder: 'productos',
+      });
+
+      fs.unlinkSync(file.path);
+
+      return {
+        message: 'Imagen subida exitosamente',
+        url: resultado.secure_url,
+        public_id: resultado.public_id,
+      };
+    } catch (error) {
+      throw new NotFoundException('Error al subir la imagen a Cloudinary');
+    }
   }
 
   async crearProducto(usuarioId: number, crearProductoDto: CrearProductoDto) {
