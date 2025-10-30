@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import {v2 as cloudinary} from 'cloudinary';
 
 // Entities
 import { Producto } from './Entities/producto.entity';
@@ -21,6 +22,12 @@ import { CategoriasProductosController } from './Controllers/categoriaproducto.c
 
 // Auth Module
 import { AuthModule } from '../auth/auth.module';
+
+  cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.CLOUD_API_KEY,
+    api_secret: process.env.CLOUD_API_SECRET,
+  })
 
 @Module({
   imports: [
