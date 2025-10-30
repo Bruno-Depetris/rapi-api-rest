@@ -76,23 +76,6 @@ export class ProductosService implements IProductoService {
       throw new NotFoundException('No se ha recibido ningún archivo');
     }
 
-    
-  // 🧩 1️⃣ Log de las variables de entorno
-  console.log('🔍 Cloudinary config vars:', {
-    CLOUD_NAME: process.env.CLOUD_NAME,
-    CLOUD_API_KEY: process.env.CLOUD_API_KEY ? '✅ presente' : '❌ faltante',
-    CLOUD_API_SECRET: process.env.CLOUD_API_SECRET ? '✅ presente' : '❌ faltante',
-  });
-
-  // 🧩 2️⃣ Log del archivo recibido
-  console.log('📁 Archivo recibido:', {
-    fieldname: file.fieldname,
-    originalname: file.originalname,
-    mimetype: file.mimetype,
-    size: file.size,
-    buffer: !!file.buffer, // true si existe buffer
-  });
-
     try {
       const resultado: any = await new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
