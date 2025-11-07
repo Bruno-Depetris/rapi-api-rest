@@ -1,8 +1,8 @@
-import { IsInt, isNotEmpty } from "class-validator";
+import { IsInt, IsNotEmpty } from "class-validator";
 
 export class AgregarFavoritoDTO {
   @IsInt()
-  UsuarioId: number;
+  UsuarioId?: number;
   @IsInt()
   ProductoId: number;
 }
