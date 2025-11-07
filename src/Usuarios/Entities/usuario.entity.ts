@@ -34,5 +34,5 @@ export class Usuario {
   repartidor?: Repartidor;
 
   @OneToMany(() => Favoritos, (favoritos) => favoritos.usuario)
-  favoritos: Favoritos[];
+  favoritos: Favoritos[] | null;
 }
