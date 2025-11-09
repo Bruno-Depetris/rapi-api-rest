@@ -13,9 +13,8 @@ export class ActualizarMetodoPagoUseCase implements IActualizarMetodoPagoUseCase
       throw new NotFoundException('Método de pago no encontrado');
     }
 
-    // Si se cambia el nombre, verificar que no exista
     if (dto.Metodo && dto.Metodo !== metodoPago.Metodo) {
-      const existe = await this.metodoPagoRepository.existsByNombre(dto.Metodo);
+      const existe = await this.metodoPagoRepository.findByNombre(dto.Metodo);
       if (existe) {
         throw new ConflictException('Ya existe un método de pago con ese nombre');
       }

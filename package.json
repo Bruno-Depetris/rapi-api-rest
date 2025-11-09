@@ -78,16 +78,35 @@
     "^.+\\.ts$": "ts-jest"
   },
   "collectCoverageFrom": [
-    "src/**/*.ts",
+    "src/**/*.service.ts",
+    "src/**/*.usecase.ts",
     "!src/**/*.module.ts",
-    "!src/**/*.spec.ts",
-    "!src/**/__tests__/**",
-    "!src/main.ts"
+    "!src/**/*.dto.ts",
+    "!src/**/*.entity.ts",
+    "!src/**/*.controller.ts",
+    "!src/**/*.interface.ts",
+    "!src/**/*.port.ts",
+    "!src/**/*.repository.ts",
+    "!src/**/Entities/**",
+    "!src/**/DTOs/**",
+    "!src/**/Controllers/**",
+    "!src/**/Repositories/**",
+    "!src/**/Interfaces/**",
+    "!src/**/Ports/**",
+    "!src/main.ts",
+    "!src/app.module.ts"
   ],
   "coveragePathIgnorePatterns": [
     "/node_modules/",
     "/dist/",
-    "/__tests__/"
+    "/__tests__/",
+    ".module.ts$",
+    ".dto.ts$",
+    ".entity.ts$",
+    ".controller.ts$",
+    ".interface.ts$",
+    ".port.ts$",
+    ".repository.ts$"
   ],
   "coverageDirectory": "./coverage",
   "testEnvironment": "node",
