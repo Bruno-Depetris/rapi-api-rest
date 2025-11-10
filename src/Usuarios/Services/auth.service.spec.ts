@@ -12,7 +12,6 @@ import { LoginDto } from '../DTOs/login.dto';
 import { LoginAdminDto } from '../DTOs/loginAdmin.dto';
 import { Usuario } from '../Entities/usuario.entity';
 
-// Mock de bcrypt
 jest.mock('bcrypt');
 
 describe('AuthService', () => {
@@ -21,7 +20,6 @@ describe('AuthService', () => {
   let adminRepository: jest.Mocked<AdministradorRepository>;
   let jwtService: jest.Mocked<JwtService>;
 
-  // Mock data
 const mockUsuario: Usuario = {
   UsuarioId: 1,
   Nombre: 'Juan Perez',

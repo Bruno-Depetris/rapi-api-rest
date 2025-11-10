@@ -43,14 +43,12 @@ describe('FavoritosService', () => {
         };
 
         it('debería agregar un favorito exitosamente', async () => {
-            // Arrange
+
             repository.findAllByUsuarioId.mockResolvedValue([]);
             repository.create.mockResolvedValue(mockFavorito);
 
-            // Act
             const result = await service.agregarFavorito(dto);
 
-            // Assert
             expect(repository.findAllByUsuarioId).toHaveBeenCalledWith(5);
             expect(repository.create).toHaveBeenCalledWith({
                 UsuarioId: 5,
@@ -60,10 +58,9 @@ describe('FavoritosService', () => {
         });
 
         it('debería lanzar ConflictException si ya existe', async () => {
-            // Arrange
+
             repository.findAllByUsuarioId.mockResolvedValue([mockFavorito]);
 
-            // Act & Assert
             await expect(service.agregarFavorito(dto)).rejects.toThrow(
                 new ConflictException('El producto ya está en favoritos'),
             );
@@ -71,10 +68,9 @@ describe('FavoritosService', () => {
         });
 
         it('debería lanzar NotFoundException si no hay UsuarioId', async () => {
-            // Arrange
+
             const dtoSinUsuario = { UsuarioId: undefined, ProductoId: 10 } as any;
 
-            // Act & Assert
             await expect(service.agregarFavorito(dtoSinUsuario)).rejects.toThrow(
                 new NotFoundException('El UsuarioId es requerido'),
             );
@@ -83,13 +79,10 @@ describe('FavoritosService', () => {
 
     describe('listarFavoritos', () => {
         it('debería listar favoritos del usuario', async () => {
-            // Arrange
             repository.findAllByUsuarioId.mockResolvedValue([mockFavorito]);
 
-            // Act
             const result = await service.listarFavoritos(5);
 
-            // Assert
             expect(repository.findAllByUsuarioId).toHaveBeenCalledWith(5);
             expect(result).toHaveLength(1);
             expect(result[0].ProductoId).toBe(10);
@@ -98,22 +91,19 @@ describe('FavoritosService', () => {
 
     describe('eliminarFavorito', () => {
         it('debería eliminar un favorito exitosamente', async () => {
-            // Arrange
             repository.findAllByUsuarioId.mockResolvedValue([mockFavorito]);
 
-            // Act
             await service.eliminarFavorito(5, 10);
 
-            // Assert
             expect(repository.findAllByUsuarioId).toHaveBeenCalledWith(5);
             expect(repository.removeByUsuarioYProducto).toHaveBeenCalledWith(5, 10);
         });
 
         it('debería lanzar NotFoundException si no existe el favorito', async () => {
-            // Arrange
+
             repository.findAllByUsuarioId.mockResolvedValue([]);
 
-            // Act & Assert
+
             await expect(service.eliminarFavorito(5, 10)).rejects.toThrow(
                 new NotFoundException('El favorito no existe'),
             );

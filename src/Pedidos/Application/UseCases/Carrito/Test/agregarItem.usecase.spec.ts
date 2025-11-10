@@ -94,7 +94,6 @@ describe('AgregarItemUseCase', () => {
     };
 
     it('debería agregar un producto nuevo al carrito', async () => {
-      // Arrange
       const mockCarrito = createMockCarrito();
       
       productoPort.obtenerDatos.mockResolvedValue(mockProducto);
@@ -110,10 +109,8 @@ describe('AgregarItemUseCase', () => {
         })
       );
 
-      // Act
       const result = await useCase.ejecutar(1, dto);
 
-      // Assert
       expect(productoPort.obtenerDatos).toHaveBeenCalledWith(dto.ProductoId);
       expect(productoPort.validarStock).toHaveBeenCalledWith(dto.ProductoId, dto.Cantidad);
       expect(carritoItemRepository.create).toHaveBeenCalledWith({
@@ -129,7 +126,6 @@ describe('AgregarItemUseCase', () => {
     });
 
     it('debería crear un carrito nuevo si no existe', async () => {
-      // Arrange
       const nuevoCarrito = createMockCarrito();
       
       productoPort.obtenerDatos.mockResolvedValue(mockProducto);
@@ -145,10 +141,8 @@ describe('AgregarItemUseCase', () => {
         })
       );
 
-      // Act
       await useCase.ejecutar(1, dto);
 
-      // Assert
       expect(carritoRepository.create).toHaveBeenCalledWith({
         UsuarioId: 1,
         Estado: 'Activo',
@@ -157,7 +151,6 @@ describe('AgregarItemUseCase', () => {
     });
 
     it('debería actualizar cantidad si el producto ya existe en el carrito', async () => {
-      // Arrange
       const mockCarrito = createMockCarrito();
       const itemExistente = createMockCarritoItem({
         CarritoItemId: 5,
@@ -177,23 +170,19 @@ describe('AgregarItemUseCase', () => {
         })
       );
 
-      // Act
       await useCase.ejecutar(1, dto);
 
-      // Assert
       expect(carritoItemRepository.actualizarCantidad).toHaveBeenCalledWith(
         itemExistente.CarritoItemId,
-        3, // 1 + 2
-        45000, // 3 * 15000
+        3, 
+        45000, 
       );
       expect(carritoItemRepository.create).not.toHaveBeenCalled();
     });
 
     it('debería lanzar NotFoundException si el producto no existe', async () => {
-      // Arrange
       productoPort.obtenerDatos.mockResolvedValue(null);
 
-      // Act & Assert
       await expect(useCase.ejecutar(1, dto)).rejects.toThrow(
         new NotFoundException('Producto no encontrado'),
       );
@@ -202,11 +191,9 @@ describe('AgregarItemUseCase', () => {
     });
 
     it('debería lanzar BadRequestException si no hay stock suficiente', async () => {
-      // Arrange
       productoPort.obtenerDatos.mockResolvedValue(mockProducto);
       productoPort.validarStock.mockResolvedValue(false);
 
-      // Act & Assert
       await expect(useCase.ejecutar(1, dto)).rejects.toThrow(
         new BadRequestException('Stock insuficiente'),
       );

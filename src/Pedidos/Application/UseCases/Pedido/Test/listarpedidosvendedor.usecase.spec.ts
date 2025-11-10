@@ -1,5 +1,5 @@
 
- import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { ListarMisPedidosUseCase } from '../listarmispedidos.usecase';
 import { ListarPedidosVendedorUseCase } from '../listarpedidosvendedor.usecase';
@@ -7,11 +7,17 @@ import { ObtenerPedidoUseCase } from '../obtenerpedido.usecase';
 import { PedidoRepository } from '../../../../Infrastructure/Persistence/pedido.repository';
 import { IVendedorPort } from '../../../../Infrastructure/Ports/Outbound/vendedor.port';
 import { IRepartidorPort } from '../../../../Infrastructure/Ports/Outbound/repartidor.port';
+import { Negocio } from 'src/Negocios/Entities/negocio.entity';
 
 describe('Pedidos Restantes UseCases', () => {
   let pedidoRepository: jest.Mocked<PedidoRepository>;
   let vendedorPort: jest.Mocked<IVendedorPort>;
   let repartidorPort: jest.Mocked<IRepartidorPort>;
+
+  const mockVendedor = {
+    vendedorId: 5,
+    negocioId: 1,
+  };
 
   const mockPedido = {
     PedidoId: 100,
@@ -64,8 +70,7 @@ describe('Pedidos Restantes UseCases', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
- 
- // ==================== LISTAR PEDIDOS VENDEDOR ====================
+
   describe('ListarPedidosVendedorUseCase', () => {
     let useCase: ListarPedidosVendedorUseCase;
 
@@ -80,8 +85,7 @@ describe('Pedidos Restantes UseCases', () => {
       useCase = module.get(ListarPedidosVendedorUseCase);
     });
 
-    it('debería listar pedidos que incluyen productos del vendedor', async () => {
-      const mockVendedor = { vendedorId: 5 };
+    it('debería listar pedidos que incluyen productos del vendedor', async () => { 
       vendedorPort.obtenerPorUsuarioId.mockResolvedValue(mockVendedor);
 
       const mockQuery = {
@@ -118,7 +122,6 @@ describe('Pedidos Restantes UseCases', () => {
     });
 
     it('debería filtrar por estado cuando se proporciona', async () => {
-      const mockVendedor = { vendedorId: 5 };
       vendedorPort.obtenerPorUsuarioId.mockResolvedValue(mockVendedor);
 
       const mockQuery = {

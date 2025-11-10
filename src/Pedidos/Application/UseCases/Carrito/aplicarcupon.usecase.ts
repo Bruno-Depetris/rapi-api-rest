@@ -25,23 +25,19 @@ export class AplicarCuponUseCase implements IAplicarCuponUseCase {
       throw new BadRequestException('El carrito está vacío');
     }
 
-    // Buscar cupón por código
     const cupon = await this.cuponRepository.findByCodigo(dto.Codigo);
     if (!cupon) {
       throw new NotFoundException('Cupón no encontrado');
     }
 
-    // Validar que el cupón no esté vencido
     if (cupon.FechaExpiracion && new Date(cupon.FechaExpiracion) < new Date()) {
       throw new BadRequestException('El cupón ha expirado');
     }
 
-    // Validar usos
     if (cupon.UsosMaximos && cupon.UsosActuales >= cupon.UsosMaximos) {
       throw new BadRequestException('El cupón ha alcanzado su límite de usos');
     }
 
-    // Verificar si el cupón ya está aplicado
     const yaAplicado = await this.carritoCuponRepository.existeCuponEnCarrito(
       carrito.CarritoId,
       cupon.CuponId,
@@ -50,7 +46,6 @@ export class AplicarCuponUseCase implements IAplicarCuponUseCase {
       throw new BadRequestException('Este cupón ya está aplicado');
     }
 
-    // Calcular descuento
     let descuentoAplicado = 0;
     const subtotal = Number(carrito.Subtotal);
 
@@ -60,17 +55,14 @@ export class AplicarCuponUseCase implements IAplicarCuponUseCase {
       descuentoAplicado = Number(cupon.Descuento);
     }
 
-    // Aplicar cupón
     await this.carritoCuponRepository.create({
       CarritoId: carrito.CarritoId,
       CuponId: cupon.CuponId,
       DescuentoAplicado: descuentoAplicado,
     });
 
-    // Incrementar uso del cupón
     await this.cuponRepository.incrementarUso(cupon.CuponId);
 
-    // Recalcular totales
     await this.calcularTotales(carrito.CarritoId);
 
     const carritoActualizado = await this.carritoRepository.findById(carrito.CarritoId);

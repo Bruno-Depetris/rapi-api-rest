@@ -52,14 +52,14 @@ describe('TomarPedidoUseCase', () => {
     });
 
     it('debería permitir que un repartidor tome un pedido pendiente', async () => {
-        // Arrange
+        
         repartidorPort.obtenerPorUsuarioId.mockResolvedValue(mockRepartidor);
         pedidoRepository.findById.mockResolvedValue(mockPedido as any);
 
-        // Act
+        
         const result = await useCase.ejecutar(100, 5);
 
-        // Assert
+         
         expect(repartidorPort.obtenerPorUsuarioId).toHaveBeenCalledWith(5);
         expect(pedidoRepository.findById).toHaveBeenCalledWith(100);
         expect(pedidoRepository.update).toHaveBeenCalledWith(100, {
@@ -71,10 +71,10 @@ describe('TomarPedidoUseCase', () => {
     });
 
     it('debería lanzar NotFoundException si el usuario no es repartidor', async () => {
-        // Arrange
+        
         repartidorPort.obtenerPorUsuarioId.mockResolvedValue(null);
 
-        // Act & Assert
+          
         await expect(useCase.ejecutar(100, 5)).rejects.toThrow(
             new NotFoundException('No eres repartidor'),
         );
@@ -82,39 +82,39 @@ describe('TomarPedidoUseCase', () => {
     });
 
     it('debería lanzar NotFoundException si el pedido no existe', async () => {
-        // Arrange
+        
         repartidorPort.obtenerPorUsuarioId.mockResolvedValue(mockRepartidor);
         pedidoRepository.findById.mockResolvedValue(null);
 
-        // Act & Assert
+          
         await expect(useCase.ejecutar(100, 5)).rejects.toThrow(
             new NotFoundException('Pedido no encontrado'),
         );
     });
 
     it('debería lanzar BadRequestException si el pedido no está pendiente', async () => {
-        // Arrange
+        
         repartidorPort.obtenerPorUsuarioId.mockResolvedValue(mockRepartidor);
         pedidoRepository.findById.mockResolvedValue({
             ...mockPedido,
             Estado: 'EnCamino',
         } as any);
 
-        // Act & Assert
+          
         await expect(useCase.ejecutar(100, 5)).rejects.toThrow(
             new BadRequestException('Este pedido ya no está disponible'),
         );
     });
 
     it('debería lanzar BadRequestException si el pedido ya tiene repartidor', async () => {
-        // Arrange
+        
         repartidorPort.obtenerPorUsuarioId.mockResolvedValue(mockRepartidor);
         pedidoRepository.findById.mockResolvedValue({
             ...mockPedido,
             RepartidorId: 999,
         } as any);
 
-        // Act & Assert
+          
         await expect(useCase.ejecutar(100, 5)).rejects.toThrow(
             new BadRequestException('Este pedido ya fue tomado por otro repartidor'),
         );

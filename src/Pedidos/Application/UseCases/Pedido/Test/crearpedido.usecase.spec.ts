@@ -132,7 +132,6 @@ describe('CrearPedidoUseCase', () => {
     };
 
     it('debería crear un pedido exitosamente', async () => {
-      // Arrange
       const mockCarrito = createMockCarrito();
       const mockPedido = createMockPedido();
 
@@ -141,10 +140,8 @@ describe('CrearPedidoUseCase', () => {
       metodoPagoRepository.findById.mockResolvedValue(mockMetodoPago);
       pedidoRepository.create.mockResolvedValue(mockPedido);
 
-      // Act
       const result = await useCase.ejecutar(1, dto);
 
-      // Assert
       expect(usuarioPort.validarExiste).toHaveBeenCalledWith(1);
       expect(carritoRepository.findById).toHaveBeenCalledWith(dto.CarritoId);
       expect(metodoPagoRepository.findById).toHaveBeenCalledWith(dto.MetodoPagoId);
@@ -158,7 +155,7 @@ describe('CrearPedidoUseCase', () => {
         SubtotalProductos: 50000,
         TotalDescuentos: 5000,
         CostoEnvio: 5000,
-        Total: 50000, // 45000 + 5000
+        Total: 50000,
         Resenia: undefined,
       });
 
@@ -181,11 +178,7 @@ describe('CrearPedidoUseCase', () => {
     });
 
     it('debería crear pedido con repartidor asignado', async () => {
-      // Arrange
-      const dtoConRepartidor: CrearPedidoDto = {
-        ...dto,
-        RepartidorId: 5,
-      };
+      const dtoConRepartidor: CrearPedidoDto = { ...dto, RepartidorId: 5 };
       const mockCarrito = createMockCarrito();
       const mockPedido = createMockPedido({ RepartidorId: 5 });
 
@@ -195,24 +188,14 @@ describe('CrearPedidoUseCase', () => {
       repartidorPort.validarExiste.mockResolvedValue(true);
       pedidoRepository.create.mockResolvedValue(mockPedido);
 
-      // Act
       await useCase.ejecutar(1, dtoConRepartidor);
 
-      // Assert
       expect(repartidorPort.validarExiste).toHaveBeenCalledWith(5);
-      expect(pedidoRepository.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          RepartidorId: 5,
-        })
-      );
+      expect(pedidoRepository.create).toHaveBeenCalledWith(expect.objectContaining({ RepartidorId: 5 }));
     });
 
     it('debería crear pedido con reseña', async () => {
-      // Arrange
-      const dtoConResenia: CrearPedidoDto = {
-        ...dto,
-        Resenia: 'Entrega rápida por favor',
-      };
+      const dtoConResenia: CrearPedidoDto = { ...dto, Resenia: 'Entrega rápida por favor' };
       const mockCarrito = createMockCarrito();
       const mockPedido = createMockPedido({ Resenia: 'Entrega rápida por favor' });
 
@@ -221,19 +204,14 @@ describe('CrearPedidoUseCase', () => {
       metodoPagoRepository.findById.mockResolvedValue(mockMetodoPago);
       pedidoRepository.create.mockResolvedValue(mockPedido);
 
-      // Act
       await useCase.ejecutar(1, dtoConResenia);
 
-      // Assert
       expect(pedidoRepository.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          Resenia: 'Entrega rápida por favor',
-        })
+        expect.objectContaining({ Resenia: 'Entrega rápida por favor' }),
       );
     });
 
     it('debería calcular el total correctamente incluyendo costo de envío', async () => {
-      // Arrange
       const mockCarrito = createMockCarrito({
         Subtotal: 100000,
         TotalDescuentos: 10000,
@@ -246,25 +224,21 @@ describe('CrearPedidoUseCase', () => {
       metodoPagoRepository.findById.mockResolvedValue(mockMetodoPago);
       pedidoRepository.create.mockResolvedValue(mockPedido);
 
-      // Act
       await useCase.ejecutar(1, dto);
 
-      // Assert
       expect(pedidoRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({
           SubtotalProductos: 100000,
           TotalDescuentos: 10000,
           CostoEnvio: 5000,
-          Total: 95000, // 90000 + 5000
-        })
+          Total: 95000,
+        }),
       );
     });
 
     it('debería lanzar NotFoundException si el usuario no existe', async () => {
-      // Arrange
       usuarioPort.validarExiste.mockResolvedValue(false);
 
-      // Act & Assert
       await expect(useCase.ejecutar(1, dto)).rejects.toThrow(
         new NotFoundException('Usuario no encontrado'),
       );
@@ -274,11 +248,9 @@ describe('CrearPedidoUseCase', () => {
     });
 
     it('debería lanzar NotFoundException si el carrito no existe', async () => {
-      // Arrange
       usuarioPort.validarExiste.mockResolvedValue(true);
       carritoRepository.findById.mockResolvedValue(null);
 
-      // Act & Assert
       await expect(useCase.ejecutar(1, dto)).rejects.toThrow(
         new NotFoundException('Carrito no encontrado'),
       );
@@ -288,13 +260,11 @@ describe('CrearPedidoUseCase', () => {
     });
 
     it('debería lanzar ForbiddenException si el carrito no pertenece al usuario', async () => {
-      // Arrange
       const carritoDeOtroUsuario = createMockCarrito({ UsuarioId: 999 });
       
       usuarioPort.validarExiste.mockResolvedValue(true);
       carritoRepository.findById.mockResolvedValue(carritoDeOtroUsuario);
 
-      // Act & Assert
       await expect(useCase.ejecutar(1, dto)).rejects.toThrow(
         new ForbiddenException('Este carrito no te pertenece'),
       );
@@ -304,13 +274,11 @@ describe('CrearPedidoUseCase', () => {
     });
 
     it('debería lanzar BadRequestException si el carrito no está activo', async () => {
-      // Arrange
       const carritoInactivo = createMockCarrito({ Estado: 'Convertido' });
       
       usuarioPort.validarExiste.mockResolvedValue(true);
       carritoRepository.findById.mockResolvedValue(carritoInactivo);
 
-      // Act & Assert
       await expect(useCase.ejecutar(1, dto)).rejects.toThrow(
         new BadRequestException('Este carrito ya no está activo'),
       );
@@ -319,13 +287,11 @@ describe('CrearPedidoUseCase', () => {
     });
 
     it('debería lanzar BadRequestException si el carrito está vacío', async () => {
-      // Arrange
       const carritoVacio = createMockCarrito({ items: [] });
       
       usuarioPort.validarExiste.mockResolvedValue(true);
       carritoRepository.findById.mockResolvedValue(carritoVacio);
 
-      // Act & Assert
       await expect(useCase.ejecutar(1, dto)).rejects.toThrow(
         new BadRequestException('El carrito está vacío'),
       );
@@ -334,27 +300,23 @@ describe('CrearPedidoUseCase', () => {
     });
 
     it('debería lanzar BadRequestException si items es null', async () => {
-      // Arrange
       const carritoSinItems = createMockCarrito({ items: undefined });
       
       usuarioPort.validarExiste.mockResolvedValue(true);
       carritoRepository.findById.mockResolvedValue(carritoSinItems);
 
-      // Act & Assert
       await expect(useCase.ejecutar(1, dto)).rejects.toThrow(
         new BadRequestException('El carrito está vacío'),
       );
     });
 
     it('debería lanzar NotFoundException si el método de pago no existe', async () => {
-      // Arrange
       const mockCarrito = createMockCarrito();
       
       usuarioPort.validarExiste.mockResolvedValue(true);
       carritoRepository.findById.mockResolvedValue(mockCarrito);
       metodoPagoRepository.findById.mockResolvedValue(null);
 
-      // Act & Assert
       await expect(useCase.ejecutar(1, dto)).rejects.toThrow(
         new NotFoundException('Método de pago no encontrado'),
       );
@@ -363,11 +325,7 @@ describe('CrearPedidoUseCase', () => {
     });
 
     it('debería lanzar NotFoundException si el repartidor no existe', async () => {
-      // Arrange
-      const dtoConRepartidor: CrearPedidoDto = {
-        ...dto,
-        RepartidorId: 5,
-      };
+      const dtoConRepartidor: CrearPedidoDto = { ...dto, RepartidorId: 5 };
       const mockCarrito = createMockCarrito();
       
       usuarioPort.validarExiste.mockResolvedValue(true);
@@ -375,7 +333,6 @@ describe('CrearPedidoUseCase', () => {
       metodoPagoRepository.findById.mockResolvedValue(mockMetodoPago);
       repartidorPort.validarExiste.mockResolvedValue(false);
 
-      // Act & Assert
       await expect(useCase.ejecutar(1, dtoConRepartidor)).rejects.toThrow(
         new NotFoundException('Repartidor no encontrado'),
       );
@@ -384,30 +341,11 @@ describe('CrearPedidoUseCase', () => {
     });
 
     it('debería crear múltiples detalles de pedido cuando hay varios items', async () => {
-      // Arrange
       const carritoConVariosItems = createMockCarrito({
         items: [
-          {
-            CarritoItemId: 1,
-            ProductoId: 10,
-            Cantidad: 2,
-            PrecioUnitario: 25000,
-            Subtotal: 50000,
-          } as any,
-          {
-            CarritoItemId: 2,
-            ProductoId: 20,
-            Cantidad: 1,
-            PrecioUnitario: 15000,
-            Subtotal: 15000,
-          } as any,
-          {
-            CarritoItemId: 3,
-            ProductoId: 30,
-            Cantidad: 3,
-            PrecioUnitario: 10000,
-            Subtotal: 30000,
-          } as any,
+          { CarritoItemId: 1, ProductoId: 10, Cantidad: 2, PrecioUnitario: 25000, Subtotal: 50000 } as any,
+          { CarritoItemId: 2, ProductoId: 20, Cantidad: 1, PrecioUnitario: 15000, Subtotal: 15000 } as any,
+          { CarritoItemId: 3, ProductoId: 30, Cantidad: 3, PrecioUnitario: 10000, Subtotal: 30000 } as any,
         ],
       });
       const mockPedido = createMockPedido();
@@ -417,32 +355,12 @@ describe('CrearPedidoUseCase', () => {
       metodoPagoRepository.findById.mockResolvedValue(mockMetodoPago);
       pedidoRepository.create.mockResolvedValue(mockPedido);
 
-      // Act
       await useCase.ejecutar(1, dto);
 
-      // Assert
       expect(detallePedidoRepository.createMultiple).toHaveBeenCalledWith([
-        {
-          PedidoId: 100,
-          ProductoId: 10,
-          Cantidad: 2,
-          PrecioUnitario: 25000,
-          Subtotal: 50000,
-        },
-        {
-          PedidoId: 100,
-          ProductoId: 20,
-          Cantidad: 1,
-          PrecioUnitario: 15000,
-          Subtotal: 15000,
-        },
-        {
-          PedidoId: 100,
-          ProductoId: 30,
-          Cantidad: 3,
-          PrecioUnitario: 10000,
-          Subtotal: 30000,
-        },
+        { PedidoId: 100, ProductoId: 10, Cantidad: 2, PrecioUnitario: 25000, Subtotal: 50000 },
+        { PedidoId: 100, ProductoId: 20, Cantidad: 1, PrecioUnitario: 15000, Subtotal: 15000 },
+        { PedidoId: 100, ProductoId: 30, Cantidad: 3, PrecioUnitario: 10000, Subtotal: 30000 },
       ]);
     });
   });

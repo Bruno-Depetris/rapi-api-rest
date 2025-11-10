@@ -14,7 +14,7 @@ export interface IUsuariosService {
       telefono: string | null;
       horario: string | null;
       comision: number | null;
-      estado: string; // 👈 AGREGAR
+      estado: string; 
     };
     repartidor?: {
       repartidorId: number;

@@ -32,7 +32,6 @@ describe('Métodos de Pago UseCases', () => {
         jest.clearAllMocks();
     });
 
-    // ==================== CREAR MÉTODO DE PAGO ====================
     describe('CrearMetodoPagoUseCase', () => {
         let useCase: CrearMetodoPagoUseCase;
 
@@ -68,7 +67,6 @@ describe('Métodos de Pago UseCases', () => {
         });
     });
 
-    // ==================== ACTUALIZAR MÉTODO DE PAGO ====================
     describe('ActualizarMetodoPagoUseCase', () => {
         let useCase: ActualizarMetodoPagoUseCase;
 
@@ -125,7 +123,6 @@ describe('Métodos de Pago UseCases', () => {
         });
     });
 
-    // ==================== ELIMINAR MÉTODO DE PAGO ====================
     describe('EliminarMetodoPagoUseCase', () => {
         let useCase: EliminarMetodoPagoUseCase;
 
@@ -159,7 +156,6 @@ describe('Métodos de Pago UseCases', () => {
         });
     });
 
-    // ==================== OBTENER MÉTODO DE PAGO ====================
     describe('ObtenerMetodoPagoUseCase', () => {
         let useCase: ObtenerMetodoPagoUseCase;
 
@@ -192,7 +188,6 @@ describe('Métodos de Pago UseCases', () => {
         });
     });
 
-    // ==================== LISTAR MÉTODOS DE PAGO ====================
     describe('ListarMetodosPagoUseCase', () => {
         let useCase: ListarMetodosPagoUseCase;
 

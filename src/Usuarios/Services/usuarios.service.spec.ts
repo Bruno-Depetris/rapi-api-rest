@@ -52,9 +52,6 @@ describe('UsuariosService', () => {
     jest.clearAllMocks();
   });
 
-  // -----------------------------------------------
-  // OBTENER PERFIL
-  // -----------------------------------------------
   it('debería retornar el perfil del usuario', async () => {
     mockUsuarioRepo.findById.mockResolvedValue({
       UsuarioId: 1,
@@ -75,9 +72,6 @@ describe('UsuariosService', () => {
     await expect(service.obtenerPerfil(1)).rejects.toThrow(NotFoundException);
   });
 
-  // -----------------------------------------------
-  // CAMBIAR A VENDEDOR
-  // -----------------------------------------------
   it('debería crear solicitud de vendedor', async () => {
     mockUsuarioRepo.findById.mockResolvedValue({ UsuarioId: 1, Rol: 'cliente' });
     mockVendedorRepo.existsByUsuarioId.mockResolvedValue(false);
@@ -104,9 +98,6 @@ describe('UsuariosService', () => {
     await expect(service.cambiarAVendedor(1, {} as any)).rejects.toThrow(ConflictException);
   });
 
-  // -----------------------------------------------
-  // LISTAR SOLICITUDES
-  // -----------------------------------------------
   it('debería listar solicitudes de vendedor', async () => {
     mockVendedorRepo.findByEstado.mockResolvedValue([
       {
@@ -125,9 +116,7 @@ describe('UsuariosService', () => {
     expect(result.length).toBe(1);
   });
 
-  // -----------------------------------------------
-  // APROBAR VENDEDOR
-  // -----------------------------------------------
+
   it('debería aprobar vendedor', async () => {
     mockVendedorRepo.findById.mockResolvedValue({
       VendedorId: 1,
@@ -143,9 +132,7 @@ describe('UsuariosService', () => {
     expect(mockUsuarioRepo.updateRol).toHaveBeenCalledWith(2, 'vendedor');
   });
 
-  // -----------------------------------------------
-  // RECHAZAR VENDEDOR
-  // -----------------------------------------------
+
   it('debería rechazar vendedor', async () => {
     mockVendedorRepo.findById.mockResolvedValue({
       VendedorId: 1,
@@ -159,9 +146,7 @@ describe('UsuariosService', () => {
     expect(mockVendedorRepo.updateEstado).toHaveBeenCalledWith(1, 'Rechazado');
   });
 
-  // -----------------------------------------------
-  // CAMBIAR A REPARTIDOR
-  // -----------------------------------------------
+
   it('debería cambiar a repartidor', async () => {
     mockUsuarioRepo.findById.mockResolvedValue({ UsuarioId: 1, Rol: 'cliente' });
     mockRepartidorRepo.existsByUsuarioId.mockResolvedValue(false);
@@ -173,9 +158,7 @@ describe('UsuariosService', () => {
     expect(mockUsuarioRepo.updateRol).toHaveBeenCalledWith(1, 'repartidor');
   });
 
-  // -----------------------------------------------
-  // ELIMINAR USUARIO
-  // -----------------------------------------------
+
   it('debería eliminar usuario', async () => {
     mockUsuarioRepo.findById.mockResolvedValue({ UsuarioId: 1, Rol: 'cliente' });
 

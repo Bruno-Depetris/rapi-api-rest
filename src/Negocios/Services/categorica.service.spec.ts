@@ -42,7 +42,7 @@ describe('CategoriasService', () => {
 
     describe('listarCategorias', () => {
         it('debería listar todas las categorías', async () => {
-            // Arrange
+            
             const categorias = [
                 { CategoriaId: 1, Categoria: 'Restaurantes' },
                 { CategoriaId: 2, Categoria: 'Supermercados' },
@@ -50,10 +50,10 @@ describe('CategoriasService', () => {
             ];
             categoriaRepository.findAll.mockResolvedValue(categorias as any);
 
-            // Act
+            
             const result = await service.listarCategorias();
 
-            // Assert
+            
             expect(categoriaRepository.findAll).toHaveBeenCalled();
             expect(result).toHaveLength(3);
             expect(result[0]).toEqual({
@@ -65,13 +65,11 @@ describe('CategoriasService', () => {
 
     describe('obtenerCategoria', () => {
         it('debería obtener una categoría por ID', async () => {
-            // Arrange
+    
             categoriaRepository.findById.mockResolvedValue(mockCategoria as any);
 
-            // Act
             const result = await service.obtenerCategoria(1);
 
-            // Assert
             expect(categoriaRepository.findById).toHaveBeenCalledWith(1);
             expect(result).toEqual({
                 categoriaId: 1,
@@ -80,10 +78,9 @@ describe('CategoriasService', () => {
         });
 
         it('debería lanzar NotFoundException si no existe', async () => {
-            // Arrange
+
             categoriaRepository.findById.mockResolvedValue(null);
 
-            // Act & Assert
             await expect(service.obtenerCategoria(999)).rejects.toThrow(
                 new NotFoundException('Categoría no encontrada'),
             );
@@ -96,14 +93,12 @@ describe('CategoriasService', () => {
         };
 
         it('debería crear una categoría exitosamente', async () => {
-            // Arrange
+
             categoriaRepository.existsByNombre.mockResolvedValue(false);
             categoriaRepository.create.mockResolvedValue(mockCategoria as any);
 
-            // Act
             const result = await service.crearCategoria(dto);
 
-            // Assert
             expect(categoriaRepository.existsByNombre).toHaveBeenCalledWith('Restaurantes');
             expect(categoriaRepository.create).toHaveBeenCalledWith(dto);
             expect(result.message).toBe('Categoría creada exitosamente');
@@ -111,10 +106,9 @@ describe('CategoriasService', () => {
         });
 
         it('debería lanzar ConflictException si ya existe', async () => {
-            // Arrange
+            
             categoriaRepository.existsByNombre.mockResolvedValue(true);
 
-            // Act & Assert
             await expect(service.crearCategoria(dto)).rejects.toThrow(
                 new ConflictException('Ya existe una categoría con ese nombre'),
             );
@@ -128,16 +122,14 @@ describe('CategoriasService', () => {
         };
 
         it('debería actualizar una categoría exitosamente', async () => {
-            // Arrange
+            
             const categoriaActualizada = { ...mockCategoria, Categoria: 'Restaurantes Modificado' };
             categoriaRepository.findById.mockResolvedValue(mockCategoria as any);
             categoriaRepository.findByNombre.mockResolvedValue(null);
             categoriaRepository.update.mockResolvedValue(categoriaActualizada as any);
 
-            // Act
             const result = await service.actualizarCategoria(1, dto);
 
-            // Assert
             expect(categoriaRepository.findById).toHaveBeenCalledWith(1);
             expect(categoriaRepository.findByNombre).toHaveBeenCalledWith('Restaurantes Modificado');
             expect(categoriaRepository.update).toHaveBeenCalledWith(1, dto);
@@ -145,22 +137,20 @@ describe('CategoriasService', () => {
         });
 
         it('debería lanzar NotFoundException si no existe', async () => {
-            // Arrange
+
             categoriaRepository.findById.mockResolvedValue(null);
 
-            // Act & Assert
             await expect(service.actualizarCategoria(999, dto)).rejects.toThrow(
                 new NotFoundException('Categoría no encontrada'),
             );
         });
 
         it('debería lanzar ConflictException si nuevo nombre ya existe', async () => {
-            // Arrange
+            
             const otraCategoria = { CategoriaId: 2, Categoria: 'Restaurantes Modificado' };
             categoriaRepository.findById.mockResolvedValue(mockCategoria as any);
             categoriaRepository.findByNombre.mockResolvedValue(otraCategoria as any);
 
-            // Act & Assert
             await expect(service.actualizarCategoria(1, dto)).rejects.toThrow(
                 new ConflictException('Ya existe una categoría con ese nombre'),
             );
@@ -169,23 +159,21 @@ describe('CategoriasService', () => {
 
     describe('eliminarCategoria', () => {
         it('debería eliminar una categoría exitosamente', async () => {
-            // Arrange
+            
             categoriaRepository.findById.mockResolvedValue(mockCategoria as any);
 
-            // Act
             const result = await service.eliminarCategoria(1);
 
-            // Assert
             expect(categoriaRepository.findById).toHaveBeenCalledWith(1);
             expect(categoriaRepository.delete).toHaveBeenCalledWith(1);
             expect(result.message).toBe('Categoría eliminada exitosamente');
         });
 
         it('debería lanzar NotFoundException si no existe', async () => {
-            // Arrange
+            
             categoriaRepository.findById.mockResolvedValue(null);
 
-            // Act & Assert
+            
             await expect(service.eliminarCategoria(999)).rejects.toThrow(
                 new NotFoundException('Categoría no encontrada'),
             );

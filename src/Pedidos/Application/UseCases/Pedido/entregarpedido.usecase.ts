@@ -17,7 +17,6 @@ export class EntregarPedidoUseCase implements IEntregarPedidoUseCase {
       throw new NotFoundException('No eres repartidor');
     }
 
-    // Obtener pedido
     const pedido = await this.pedidoRepository.findById(pedidoId);
     if (!pedido) {
       throw new NotFoundException('Pedido no encontrado');
@@ -31,7 +30,6 @@ export class EntregarPedidoUseCase implements IEntregarPedidoUseCase {
       throw new BadRequestException('El pedido ya fue entregado');
     }
 
-    // Marcar como entregado
     await this.pedidoRepository.marcarEntregado(pedidoId);
 
     const pedidoActualizado = await this.pedidoRepository.findById(pedidoId);

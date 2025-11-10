@@ -66,15 +66,13 @@ describe('NegociosService', () => {
 
     describe('listarNegocios', () => {
         it('debería listar negocios con paginación', async () => {
-            // Arrange
             const negocios = [mockNegocio, { ...mockNegocio, NegocioId: 2 }];
             negocioRepository.findAll.mockResolvedValue(negocios as any);
             negocioRepository.count.mockResolvedValue(2);
 
-            // Act
             const result = await service.listarNegocios(1, 10);
 
-            // Assert
+            
             expect(negocioRepository.findAll).toHaveBeenCalledWith(1, 10);
             expect(result.data).toHaveLength(2);
             expect(result.total).toBe(2);
@@ -84,13 +82,10 @@ describe('NegociosService', () => {
 
     describe('buscarNegocios', () => {
         it('debería buscar negocios por término', async () => {
-            // Arrange
             negocioRepository.search.mockResolvedValue([mockNegocio] as any);
 
-            // Act
             const result = await service.buscarNegocios('pizza', 1, 10);
 
-            // Assert
             expect(negocioRepository.search).toHaveBeenCalledWith('pizza', 1, 10);
             expect(result.data).toHaveLength(1);
             expect(result.termino).toBe('pizza');
@@ -99,23 +94,19 @@ describe('NegociosService', () => {
 
     describe('obtenerNegocio', () => {
         it('debería obtener un negocio por ID', async () => {
-            // Arrange
+            
             negocioRepository.findById.mockResolvedValue(mockNegocio as any);
 
-            // Act
             const result = await service.obtenerNegocio(1);
 
-            // Assert
             expect(negocioRepository.findById).toHaveBeenCalledWith(1);
             expect(result.negocioId).toBe(1);
             expect(result.nombreNegocio).toBe('Pizzería Don Juan');
         });
 
         it('debería lanzar NotFoundException si no existe', async () => {
-            // Arrange
             negocioRepository.findById.mockResolvedValue(null);
 
-            // Act & Assert
             await expect(service.obtenerNegocio(999)).rejects.toThrow(
                 new NotFoundException('Negocio no encontrado'),
             );
@@ -124,14 +115,11 @@ describe('NegociosService', () => {
 
     describe('obtenerMiNegocio', () => {
         it('debería obtener el negocio del vendedor', async () => {
-            // Arrange
             vendedorRepository.findByUsuarioId.mockResolvedValue(mockVendedor as any);
             negocioRepository.findById.mockResolvedValue(mockNegocio as any);
 
-            // Act
             const result = await service.obtenerMiNegocio(5);
 
-            // Assert
             expect(vendedorRepository.findByUsuarioId).toHaveBeenCalledWith(5);
             expect(negocioRepository.findById).toHaveBeenCalledWith(1);
             expect(result.negocioId).toBe(1);
@@ -139,23 +127,19 @@ describe('NegociosService', () => {
         });
 
         it('debería lanzar NotFoundException si no es vendedor', async () => {
-            // Arrange
             vendedorRepository.findByUsuarioId.mockResolvedValue(null);
 
-            // Act & Assert
             await expect(service.obtenerMiNegocio(5)).rejects.toThrow(
                 new NotFoundException('No eres vendedor'),
             );
         });
 
         it('debería lanzar NotFoundException si no tiene negocio asignado', async () => {
-            // Arrange
             vendedorRepository.findByUsuarioId.mockResolvedValue({
                 ...mockVendedor,
                 NegocioId: null,
             } as any);
 
-            // Act & Assert
             await expect(service.obtenerMiNegocio(5)).rejects.toThrow(
                 new NotFoundException('No tienes un negocio asignado'),
             );
@@ -168,57 +152,51 @@ describe('NegociosService', () => {
         };
 
         it('debería actualizar negocio como admin', async () => {
-            // Arrange
+
             const negocioActualizado = { ...mockNegocio, NombreNegocio: dto.NombreNegocio };
             negocioRepository.findById.mockResolvedValue(mockNegocio as any);
             negocioRepository.findByNombre.mockResolvedValue(null);
             negocioRepository.update.mockResolvedValue(negocioActualizado as any);
 
-            // Act
             const result = await service.actualizarNegocio(1, 999, 'admin', dto);
 
-            // Assert
             expect(negocioRepository.update).toHaveBeenCalledWith(1, dto);
             expect(result.message).toBe('Negocio actualizado exitosamente');
         });
 
         it('debería actualizar negocio como vendedor propietario', async () => {
-            // Arrange
+
             const negocioActualizado = { ...mockNegocio, NombreNegocio: dto.NombreNegocio };
             negocioRepository.findById.mockResolvedValue(mockNegocio as any);
             vendedorRepository.findByUsuarioId.mockResolvedValue(mockVendedor as any);
             negocioRepository.findByNombre.mockResolvedValue(null);
             negocioRepository.update.mockResolvedValue(negocioActualizado as any);
 
-            // Act
             const result = await service.actualizarNegocio(1, 5, 'vendedor', dto);
 
-            // Assert
             expect(vendedorRepository.findByUsuarioId).toHaveBeenCalledWith(5);
             expect(negocioRepository.update).toHaveBeenCalledWith(1, dto);
         });
 
         it('debería lanzar ForbiddenException si vendedor no es propietario', async () => {
-            // Arrange
+           
             negocioRepository.findById.mockResolvedValue(mockNegocio as any);
             vendedorRepository.findByUsuarioId.mockResolvedValue({
                 ...mockVendedor,
                 NegocioId: 999,
             } as any);
 
-            // Act & Assert
             await expect(service.actualizarNegocio(1, 5, 'vendedor', dto)).rejects.toThrow(
                 new ForbiddenException('No tienes permiso para actualizar este negocio'),
             );
         });
 
         it('debería lanzar ConflictException si nombre ya existe', async () => {
-            // Arrange
+
             const otroNegocio = { NegocioId: 2, NombreNegocio: dto.NombreNegocio };
             negocioRepository.findById.mockResolvedValue(mockNegocio as any);
             negocioRepository.findByNombre.mockResolvedValue(otroNegocio as any);
 
-            // Act & Assert
             await expect(service.actualizarNegocio(1, 999, 'admin', dto)).rejects.toThrow(
                 new ConflictException('Ya existe un negocio con ese nombre'),
             );
@@ -227,26 +205,23 @@ describe('NegociosService', () => {
 
     describe('eliminarNegocio', () => {
         it('debería eliminar negocio como admin', async () => {
-            // Arrange
+
             negocioRepository.findById.mockResolvedValue(mockNegocio as any);
 
-            // Act
             const result = await service.eliminarNegocio(1, 999, 'admin');
 
-            // Assert
             expect(negocioRepository.delete).toHaveBeenCalledWith(1);
             expect(result.message).toBe('Negocio eliminado exitosamente');
         });
 
         it('debería lanzar ForbiddenException si vendedor no es propietario', async () => {
-            // Arrange
+
             negocioRepository.findById.mockResolvedValue(mockNegocio as any);
             vendedorRepository.findByUsuarioId.mockResolvedValue({
                 ...mockVendedor,
                 NegocioId: 999,
             } as any);
 
-            // Act & Assert
             await expect(service.eliminarNegocio(1, 5, 'vendedor')).rejects.toThrow(
                 new ForbiddenException('No tienes permiso para eliminar este negocio'),
             );
@@ -255,13 +230,11 @@ describe('NegociosService', () => {
 
     describe('listarPorCategoria', () => {
         it('debería listar negocios por categoría', async () => {
-            // Arrange
+
             negocioRepository.findByCategoria.mockResolvedValue([mockNegocio] as any);
 
-            // Act
             const result = await service.listarPorCategoria(1);
 
-            // Assert
             expect(negocioRepository.findByCategoria).toHaveBeenCalledWith(1);
             expect(result).toHaveLength(1);
             expect(result[0].categoriaId).toBe(1);

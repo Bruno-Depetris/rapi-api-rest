@@ -16,7 +16,6 @@ export class ValidarCuponUseCase implements IValidarCuponUseCase {
       };
     }
 
-    // Verificar expiración
     if (cupon.FechaExpiracion && new Date(cupon.FechaExpiracion) < new Date()) {
       return {
         valido: false,
@@ -24,7 +23,6 @@ export class ValidarCuponUseCase implements IValidarCuponUseCase {
       };
     }
 
-    // Verificar usos
     if (cupon.UsosMaximos && cupon.UsosActuales >= cupon.UsosMaximos) {
       return {
         valido: false,

@@ -53,7 +53,7 @@ describe('EntregarPedidoUseCase', () => {
     });
 
     it('debería marcar un pedido como entregado exitosamente', async () => {
-        // Arrange
+
         repartidorPort.obtenerPorUsuarioId.mockResolvedValue(mockRepartidor);
         pedidoRepository.findById
             .mockResolvedValueOnce(mockPedido as any)
@@ -63,10 +63,10 @@ describe('EntregarPedidoUseCase', () => {
                 FechaEntrega: new Date(),
             } as any);
 
-        // Act
+
         const result = await useCase.ejecutar(100, 5);
 
-        // Assert
+
         expect(repartidorPort.obtenerPorUsuarioId).toHaveBeenCalledWith(5);
         expect(pedidoRepository.findById).toHaveBeenCalledWith(100);
         expect(pedidoRepository.marcarEntregado).toHaveBeenCalledWith(100);
@@ -76,49 +76,49 @@ describe('EntregarPedidoUseCase', () => {
     });
 
     it('debería lanzar NotFoundException si el usuario no es repartidor', async () => {
-        // Arrange
+
         repartidorPort.obtenerPorUsuarioId.mockResolvedValue(null);
 
-        // Act & Assert
+
         await expect(useCase.ejecutar(100, 5)).rejects.toThrow(
             new NotFoundException('No eres repartidor'),
         );
     });
 
     it('debería lanzar NotFoundException si el pedido no existe', async () => {
-        // Arrange
+
         repartidorPort.obtenerPorUsuarioId.mockResolvedValue(mockRepartidor);
         pedidoRepository.findById.mockResolvedValue(null);
 
-        // Act & Assert
+
         await expect(useCase.ejecutar(100, 5)).rejects.toThrow(
             new NotFoundException('Pedido no encontrado'),
         );
     });
 
     it('debería lanzar ForbiddenException si el pedido no pertenece al repartidor', async () => {
-        // Arrange
+
         repartidorPort.obtenerPorUsuarioId.mockResolvedValue(mockRepartidor);
         pedidoRepository.findById.mockResolvedValue({
             ...mockPedido,
             RepartidorId: 999,
         } as any);
 
-        // Act & Assert
+
         await expect(useCase.ejecutar(100, 5)).rejects.toThrow(
             new ForbiddenException('Este pedido no te pertenece'),
         );
     });
 
     it('debería lanzar BadRequestException si el pedido ya está entregado', async () => {
-        // Arrange
+
         repartidorPort.obtenerPorUsuarioId.mockResolvedValue(mockRepartidor);
         pedidoRepository.findById.mockResolvedValue({
             ...mockPedido,
             Estado: 'Entregado',
         } as any);
 
-        // Act & Assert
+
         await expect(useCase.ejecutar(100, 5)).rejects.toThrow(
             new BadRequestException('El pedido ya fue entregado'),
         );

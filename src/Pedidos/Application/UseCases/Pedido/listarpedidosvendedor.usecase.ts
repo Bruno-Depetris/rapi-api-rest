@@ -17,7 +17,6 @@ export class ListarPedidosVendedorUseCase implements IListarPedidosVendedorUseCa
       throw new NotFoundException('No eres vendedor');
     }
 
-    // Buscar pedidos que incluyan productos del vendedor
     const pedidosQuery = this.pedidoRepository
       .createQueryBuilder('pedido')
       .leftJoinAndSelect('pedido.detalles', 'detalles')

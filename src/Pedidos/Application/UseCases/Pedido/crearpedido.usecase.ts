@@ -23,13 +23,12 @@ export class CrearPedidoUseCase implements ICrearPedidoUseCase {
   ) {}
 
   async ejecutar(usuarioId: number, dto: CrearPedidoDto) {
-    // 1. Validar usuario
+
     const usuarioExiste = await this.usuarioPort.validarExiste(usuarioId);
     if (!usuarioExiste) {
       throw new NotFoundException('Usuario no encontrado');
     }
 
-    // 2. Obtener y validar carrito
     const carrito = await this.carritoRepository.findById(dto.CarritoId);
     if (!carrito) {
       throw new NotFoundException('Carrito no encontrado');
@@ -47,13 +46,11 @@ export class CrearPedidoUseCase implements ICrearPedidoUseCase {
       throw new BadRequestException('El carrito está vacío');
     }
 
-    // 3. Validar método de pago
     const metodoPago = await this.metodoPagoRepository.findById(dto.MetodoPagoId);
     if (!metodoPago) {
       throw new NotFoundException('Método de pago no encontrado');
     }
 
-    // 4. Validar repartidor (opcional)
     if (dto.RepartidorId) {
       const repartidorExiste = await this.repartidorPort.validarExiste(dto.RepartidorId);
       if (!repartidorExiste) {
@@ -61,10 +58,8 @@ export class CrearPedidoUseCase implements ICrearPedidoUseCase {
       }
     }
 
-    // 5. Calcular costo de envío
     const costoEnvio = this.calcularCostoEnvio();
 
-    // 6. Crear pedido
     const nuevoPedido = await this.pedidoRepository.create({
       UsuarioId: usuarioId,
       CarritoId: carrito.CarritoId,
@@ -78,7 +73,6 @@ export class CrearPedidoUseCase implements ICrearPedidoUseCase {
       Resenia: dto.Resenia,
     });
 
-    // 7. Crear detalles
     const detalles = carrito.items.map((item) => ({
       PedidoId: nuevoPedido.PedidoId,
       ProductoId: item.ProductoId,
@@ -89,7 +83,6 @@ export class CrearPedidoUseCase implements ICrearPedidoUseCase {
 
     await this.detallePedidoRepository.createMultiple(detalles);
 
-    // 8. Marcar carrito como convertido
     await this.carritoRepository.convertirACompra(carrito.CarritoId);
 
     return {

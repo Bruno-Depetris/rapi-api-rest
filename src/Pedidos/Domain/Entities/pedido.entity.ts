@@ -49,7 +49,6 @@ export class Pedido {
   @Column({ type: 'bit', default: 0 })
   IsDeleted: boolean;
 
-  // Relaciones
   @ManyToOne(() => MetodoPago)
   @JoinColumn({ name: 'MetodoPagoId' })
   metodoPago?: MetodoPago;

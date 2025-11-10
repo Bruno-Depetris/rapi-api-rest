@@ -12,7 +12,6 @@ export class Repartidor {
   @Column({ type: 'varchar', length: 50, nullable: true })
   Vehiculo: string;
 
-  // Relación
   @OneToOne(() => Usuario, (usuario) => usuario.repartidor)
   @JoinColumn({ name: 'UsuarioId' })
   usuario: Usuario;

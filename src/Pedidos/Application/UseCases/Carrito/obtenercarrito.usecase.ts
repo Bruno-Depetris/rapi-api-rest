@@ -10,7 +10,6 @@ export class ObtenerCarritoUseCase implements IObtenerCarritoUseCase {
     let carrito = await this.carritoRepository.findCarritoActivo(usuarioId);
 
     if (!carrito) {
-      // Si no tiene carrito activo, crear uno nuevo
       carrito = await this.carritoRepository.create({
         UsuarioId: usuarioId,
         Estado: 'Activo',

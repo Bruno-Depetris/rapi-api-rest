@@ -8,7 +8,6 @@ export class CrearMetodoPagoUseCase implements ICrearMetodoPagoUseCase {
   constructor(private readonly metodoPagoRepository: MetodoPagoRepository) {}
 
   async ejecutar(dto: CrearMetodoPagoDto) {
-    // Verificar que no exista un método de pago con ese nombre
     const existe = await this.metodoPagoRepository.existsByNombre(dto.Metodo);
     if (existe) {
       throw new ConflictException('Ya existe un método de pago con ese nombre');
