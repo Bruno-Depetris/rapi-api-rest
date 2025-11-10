@@ -18,7 +18,7 @@ import { JwtAuthGuard } from '../../../../auth/jwt-auth.guard';
 import { RolesGuard } from '../../../../auth/roles.guard';
 import { Roles } from '../../../../auth/roles.decorator';
 import { CrearPedidoDto } from '../../../Application/DTOs/crearpedido.dto';
-import type{
+import type {
   ICrearPedidoUseCase,
   IObtenerPedidoUseCase,
   IListarMisPedidosUseCase,
@@ -26,6 +26,7 @@ import type{
   ITomarPedidoUseCase,
   IEntregarPedidoUseCase,
   ICancelarPedidoUseCase,
+  IListarPedidosRepartidorUseCase,
 } from '../../Ports/Inbound/pedidousecase.port';
 
 @Controller('pedidos')
@@ -45,11 +46,10 @@ export class PedidoController {
     private readonly entregarPedidoUseCase: IEntregarPedidoUseCase,
     @Inject('ICancelarPedidoUseCase')
     private readonly cancelarPedidoUseCase: ICancelarPedidoUseCase,
-  ) {}
+    @Inject('IListarPedidosRepartidorUseCase')
+    private readonly listarPedidosRepartidorUseCase: IListarPedidosRepartidorUseCase,
+  ) { }
 
-  // ==========================================
-  // ENDPOINTS PARA CLIENTES
-  // ==========================================
 
   @Get('mis-pedidos')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -70,9 +70,6 @@ export class PedidoController {
     return await this.crearPedidoUseCase.ejecutar(req.user.usuarioId, crearPedidoDto);
   }
 
-  // ==========================================
-  // ENDPOINTS PARA VENDEDORES
-  // ==========================================
 
   @Get('vendedor/mis-pedidos')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -86,19 +83,21 @@ export class PedidoController {
     return await this.listarPedidosVendedorUseCase.ejecutar(req.user.usuarioId, estado, page, limit);
   }
 
-  // ==========================================
-  // ENDPOINTS PARA REPARTIDORES
-  // ==========================================
-
-  @Get('pendientes')
+  @Get('repartidor/pendientes')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('repartidor')
-  async listarPedidosPendientes(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
-    // Este endpoint lista todos los pedidos pendientes sin filtrar por usuario
-    // La lógica se implementará en el UseCase correspondiente
-    return { message: 'Implementar listar pedidos pendientes' };
+  async listarPedidosPendientes(
+    @Request() req,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    return await this.listarPedidosRepartidorUseCase.ejecutar(
+      req.user.usuarioId,
+      'Pendiente',
+      page,
+      limit,
+    );
   }
-
   @Put(':id/tomar')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('repartidor')

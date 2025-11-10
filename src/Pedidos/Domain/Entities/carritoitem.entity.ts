@@ -25,7 +25,6 @@ export class CarritoItem {
   @Column({ type: 'bit', default: 0 })
   IsDeleted: boolean;
 
-  // Relaciones
   @ManyToOne(() => Carrito, carrito => carrito.items)
   @JoinColumn({ name: 'CarritoId' })
   carrito: Carrito;

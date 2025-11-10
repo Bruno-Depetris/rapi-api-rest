@@ -22,7 +22,6 @@ export class ActualizarItemUseCase implements IActualizarItemUseCase {
       throw new NotFoundException('Item no encontrado');
     }
 
-    // Verificar que el carrito pertenece al usuario
     const carrito = await this.carritoRepository.findById(item.CarritoId);
     if (!carrito || carrito.UsuarioId !== usuarioId) {
       throw new ForbiddenException('No tienes permiso para modificar este carrito');
@@ -32,17 +31,14 @@ export class ActualizarItemUseCase implements IActualizarItemUseCase {
       throw new BadRequestException('No puedes modificar un carrito inactivo');
     }
 
-    // Verificar stock
     const stockDisponible = await this.productoPort.validarStock(item.ProductoId, dto.Cantidad);
     if (!stockDisponible) {
       throw new BadRequestException('Stock insuficiente');
     }
 
-    // Actualizar cantidad
     const nuevoSubtotal = dto.Cantidad * Number(item.PrecioUnitario);
     await this.carritoItemRepository.actualizarCantidad(carritoItemId, dto.Cantidad, nuevoSubtotal);
 
-    // Recalcular totales
     await this.calcularTotales(carrito.CarritoId);
 
     const carritoActualizado = await this.carritoRepository.findById(carrito.CarritoId);

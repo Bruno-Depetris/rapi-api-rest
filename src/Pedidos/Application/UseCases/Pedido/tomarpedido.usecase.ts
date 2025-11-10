@@ -12,13 +12,12 @@ export class TomarPedidoUseCase implements ITomarPedidoUseCase {
   ) {}
 
   async ejecutar(pedidoId: number, usuarioId: number) {
-    // Obtener repartidor
+
     const repartidor = await this.repartidorPort.obtenerPorUsuarioId(usuarioId);
     if (!repartidor) {
       throw new NotFoundException('No eres repartidor');
     }
 
-    // Obtener pedido
     const pedido = await this.pedidoRepository.findById(pedidoId);
     if (!pedido) {
       throw new NotFoundException('Pedido no encontrado');
@@ -32,7 +31,6 @@ export class TomarPedidoUseCase implements ITomarPedidoUseCase {
       throw new BadRequestException('Este pedido ya fue tomado por otro repartidor');
     }
 
-    // Asignar repartidor y cambiar estado
     await this.pedidoRepository.update(pedidoId, {
       RepartidorId: repartidor.repartidorId,
       Estado: 'EnCamino',

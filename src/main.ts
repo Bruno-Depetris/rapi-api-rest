@@ -5,18 +5,16 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Habilitar CORS para el frontend
   app.enableCors({
-    origin: process.env.FRONTEND_URL || '*', // En producción especifica tu dominio
+    origin: process.env.FRONTEND_URL || '*', 
     credentials: true,
   });
 
-  // Validación global de DTOs
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // Remueve propiedades no definidas en el DTO
-      forbidNonWhitelisted: true, // Lanza error si hay propiedades extra
-      transform: true, // Transforma los payloads a instancias de DTO
+      whitelist: true, 
+      forbidNonWhitelisted: true, 
+      transform: true, 
     }),
   );
 
@@ -25,8 +23,8 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port, '0.0.0.0'); 
   
-  console.log(`🚀 Aplicación corriendo en puerto: ${port}`);
-  console.log(`📍 Entorno: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Aplicación corriendo en puerto: ${port}`);
+  console.log(`Entorno: ${process.env.NODE_ENV || 'development'}`);
 }
 
 bootstrap();

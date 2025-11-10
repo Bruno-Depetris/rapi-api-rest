@@ -18,7 +18,6 @@ export class EliminarItemUseCase implements IEliminarItemUseCase {
       throw new NotFoundException('Item no encontrado');
     }
 
-    // Verificar que el carrito pertenece al usuario
     const carrito = await this.carritoRepository.findById(item.CarritoId);
     if (!carrito || carrito.UsuarioId !== usuarioId) {
       throw new ForbiddenException('No tienes permiso para modificar este carrito');
@@ -30,7 +29,6 @@ export class EliminarItemUseCase implements IEliminarItemUseCase {
 
     await this.carritoItemRepository.softDelete(carritoItemId);
 
-    // Recalcular totales
     await this.calcularTotales(carrito.CarritoId);
 
     return {

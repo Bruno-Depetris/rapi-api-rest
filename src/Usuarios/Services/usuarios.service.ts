@@ -132,15 +132,12 @@ export class UsuariosService implements IUsuariosService {
       throw new BadRequestException('Esta solicitud ya fue procesada');
     }
 
-    // Aprobar vendedor
     await this.vendedorRepository.updateEstado(vendedorId, 'Aprobado');
 
-    // Activar negocio
     if (vendedor.NegocioId) {
       await this.negocioRepository.updateEstado(vendedor.NegocioId, 'Activo');
     }
 
-    // AHORA SÍ cambiar el rol del usuario
     await this.usuarioRepository.updateRol(vendedor.UsuarioId, 'vendedor');
 
     return {
@@ -162,10 +159,8 @@ export class UsuariosService implements IUsuariosService {
       throw new BadRequestException('Esta solicitud ya fue procesada');
     }
 
-    // Rechazar vendedor
     await this.vendedorRepository.updateEstado(vendedorId, 'Rechazado');
 
-    // Rechazar negocio
     if (vendedor.NegocioId) {
       await this.negocioRepository.updateEstado(vendedor.NegocioId, 'Rechazado');
     }

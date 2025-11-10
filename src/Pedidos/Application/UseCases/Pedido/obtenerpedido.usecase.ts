@@ -20,7 +20,6 @@ export class ObtenerPedidoUseCase implements IObtenerPedidoUseCase {
       throw new NotFoundException('Pedido no encontrado');
     }
 
-    // Verificar permisos según rol
     if (rol !== 'admin' && pedido.UsuarioId !== usuarioId) {
       if (rol === 'repartidor') {
         const repartidor = await this.repartidorPort.obtenerPorUsuarioId(usuarioId);

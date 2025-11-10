@@ -13,7 +13,7 @@ export class Cupon {
   Descuento: number;
 
   @Column({ type: 'varchar', length: 20, default: 'porcentaje' })
-  TipoDescuento: string; // 'porcentaje' o 'monto'
+  TipoDescuento: string; 
 
   @Column({ type: 'datetime', nullable: true })
   FechaExpiracion: Date;

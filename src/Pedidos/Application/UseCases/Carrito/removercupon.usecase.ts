@@ -20,19 +20,15 @@ export class RemoverCuponUseCase implements IRemoverCuponUseCase {
       throw new NotFoundException('Cupón no encontrado en el carrito');
     }
 
-    // Verificar que el carrito pertenece al usuario
     const carrito = await this.carritoRepository.findById(carritoCupon.CarritoId);
     if (!carrito || carrito.UsuarioId !== usuarioId) {
       throw new ForbiddenException('No tienes permiso para modificar este carrito');
     }
 
-    // Decrementar uso del cupón
     await this.cuponRepository.decrementarUso(carritoCupon.CuponId);
 
-    // Eliminar cupón del carrito
     await this.carritoCuponRepository.softDelete(carritoCuponId);
 
-    // Recalcular totales
     await this.calcularTotales(carrito.CarritoId);
 
     const carritoActualizado = await this.carritoRepository.findById(carrito.CarritoId);
