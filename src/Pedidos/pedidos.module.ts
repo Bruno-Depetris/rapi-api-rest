@@ -52,6 +52,7 @@ import { EliminarMetodoPagoUseCase } from './Application/UseCases/MetodoPago/eli
 import { CrearPedidoUseCase } from './Application/UseCases/Pedido/crearpedido.usecase';
 import { ObtenerPedidoUseCase } from './Application/UseCases/Pedido/obtenerpedido.usecase';
 import { ListarMisPedidosUseCase } from './Application/UseCases/Pedido/listarmispedidos.usecase';
+import { ListarPedidosRepartidorUseCase } from './Application/UseCases/Pedido/listarpedidosrepartidor.usecase';
 import { ListarPedidosVendedorUseCase } from './Application/UseCases/Pedido/listarpedidosvendedor.usecase';
 import { TomarPedidoUseCase } from './Application/UseCases/Pedido/tomarpedido.usecase';
 import { EntregarPedidoUseCase } from './Application/UseCases/Pedido/entregarpedido.usecase';
@@ -208,6 +209,10 @@ import { ProductosModule } from '../Productos/productos.module';
     {
       provide: 'IListarMisPedidosUseCase',
       useClass: ListarMisPedidosUseCase,
+    },
+    {
+      provide: 'IListarPedidosRepartidorUseCase',
+      useClass: ListarPedidosRepartidorUseCase,
     },
     {
       provide: 'IListarPedidosVendedorUseCase',
