@@ -53,6 +53,7 @@ import { CrearPedidoUseCase } from './Application/UseCases/Pedido/crearpedido.us
 import { ObtenerPedidoUseCase } from './Application/UseCases/Pedido/obtenerpedido.usecase';
 import { ListarMisPedidosUseCase } from './Application/UseCases/Pedido/listarmispedidos.usecase';
 import { ListarPedidosRepartidorUseCase } from './Application/UseCases/Pedido/listarpedidosrepartidor.usecase';
+import { ListarPedidosAceptadosRepartidorUseCase } from './Application/UseCases/Pedido/listaraceptados.usecase';
 import { ListarPedidosVendedorUseCase } from './Application/UseCases/Pedido/listarpedidosvendedor.usecase';
 import { TomarPedidoUseCase } from './Application/UseCases/Pedido/tomarpedido.usecase';
 import { EntregarPedidoUseCase } from './Application/UseCases/Pedido/entregarpedido.usecase';
@@ -217,6 +218,10 @@ import { ProductosModule } from '../Productos/productos.module';
     {
       provide: 'IListarPedidosVendedorUseCase',
       useClass: ListarPedidosVendedorUseCase,
+    },
+    {
+      provide: 'IListarPedidosAceptadosRepartidorUseCase',
+      useClass: ListarPedidosAceptadosRepartidorUseCase,
     },
     {
       provide: 'ITomarPedidoUseCase',

@@ -27,6 +27,7 @@ import type {
   IEntregarPedidoUseCase,
   ICancelarPedidoUseCase,
   IListarPedidosRepartidorUseCase,
+  IListarPedidosAceptadosRepartidorUseCase
 } from '../../Ports/Inbound/pedidousecase.port';
 
 @Controller('pedidos')
@@ -48,6 +49,8 @@ export class PedidoController {
     private readonly cancelarPedidoUseCase: ICancelarPedidoUseCase,
     @Inject('IListarPedidosRepartidorUseCase')
     private readonly listarPedidosRepartidorUseCase: IListarPedidosRepartidorUseCase,
+    @Inject('IListarPedidosAceptadosRepartidorUseCase')
+    private readonly listarPedidosAceptadosRepartidorUseCase: IListarPedidosAceptadosRepartidorUseCase,
   ) { }
 
 
@@ -98,6 +101,7 @@ export class PedidoController {
       limit,
     );
   }
+  
   @Put(':id/tomar')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('repartidor')
@@ -105,6 +109,22 @@ export class PedidoController {
   async tomarPedido(@Param('id', ParseIntPipe) id: number, @Request() req) {
     return await this.tomarPedidoUseCase.ejecutar(id, req.user.usuarioId);
   }
+  @Get('repartidor/aceptados')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('repartidor')
+async listarPedidosAceptados(
+  @Request() req,
+  @Query('estado') estado?: string,
+  @Query('page') page: number = 1,
+  @Query('limit') limit: number = 10,
+) {
+  return await this.listarPedidosAceptadosRepartidorUseCase.ejecutar(
+    req.user.usuarioId,
+    estado,
+    page,
+    limit,
+  );
+}
 
   @Put(':id/entregar')
   @UseGuards(JwtAuthGuard, RolesGuard)

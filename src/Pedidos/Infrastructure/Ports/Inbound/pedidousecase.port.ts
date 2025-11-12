@@ -61,6 +61,27 @@ export interface IListarMisPedidosUseCase {
   }>;
 }
 
+export interface IListarPedidosAceptadosRepartidorUseCase {
+  ejecutar(usuarioId: number, estado?: string, page?: number, limit?: number): Promise<{
+    data: Array<{
+      pedidoId: number;
+      estado: string;
+      total: number;
+      fechaCreacion: Date;
+      misProductos: Array<{
+        productoId: number;
+        nombre: string;
+        cantidad: number;
+        subtotal: number;
+      }>;
+    }>;
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }>;
+}
+
 export interface IListarPedidosRepartidorUseCase {
   ejecutar(usuarioId: number, estado?: string, page?: number, limit?: number): Promise<{
     data: Array<{
