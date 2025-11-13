@@ -28,14 +28,16 @@ export class ObtenerCarritoUseCase implements IObtenerCarritoUseCase {
       total: Number(carrito.Total),
       fechaCreacion: carrito.FechaCreacion,
       items:
-        carrito.items?.map((item) => ({
-          carritoItemId: item.CarritoItemId,
-          productoId: item.ProductoId,
-          nombre: item.producto?.Nombre || 'Producto',
-          cantidad: item.Cantidad,
-          precioUnitario: Number(item.PrecioUnitario),
-          subtotal: Number(item.Subtotal),
-        })) || [],
+  carrito.items
+    ?.filter((item) => !item.IsDeleted) // Filtrar aquí
+    ?.map((item) => ({
+      carritoItemId: item.CarritoItemId,
+      productoId: item.ProductoId,
+      nombre: item.producto?.Nombre || 'Producto',
+      cantidad: item.Cantidad,
+      precioUnitario: Number(item.PrecioUnitario),
+      subtotal: Number(item.Subtotal),
+    })) || [],
       cupones:
         carrito.cupones?.map((cc) => ({
           carritoCuponId: cc.CarritoCuponId,
